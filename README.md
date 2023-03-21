@@ -1,6 +1,6 @@
-## Mobile application for managing CHESTER devices
+# Mobile application for managing CHESTER devices
 
-# Perks
+## Perks
 * Discover you devices and measuring point through the RESTful API
 * Scan the nearby BLE devices
 * Write bytes to the device through a command line
