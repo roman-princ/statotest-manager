@@ -17,7 +17,7 @@ Manage your CHESTER sensors made by HARDWARIO a.s. company.
 
 ## Installation
 * Clone the repo in your local machine
-* Locate the repo and ```cd``` into the folder
+* Locate the repo and ```cd``` into the directory
 * Run ```npm i``` or ```npm install``` for node-modules installation
 * Run ```npx react-native-asset``` for some additional linking
 * Run ```npx pod-install``` in the ios directory (if needed)
