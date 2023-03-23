@@ -1,12 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Image, Alert, ActivityIndicator} from 'react-native';
 import useBLE from "../ble/useBLE";
 import high from "../../assets/images/high.png"
 import mid from "../../assets/images/mid.png"
 import low from "../../assets/images/low.png"
+import styles from '../../assets/style/styles.jsx';
 
 
 const ScanningScreen = ({navigation}) => {
+    const {currentDevice, scanForDevices, requestPermission, devices} = useBLE();
+    const [isActive, setIsActive] = useState(false);
     const rssiConverter = (rssi) =>{
         if(rssi > -50){
             return high;
@@ -21,7 +24,6 @@ const ScanningScreen = ({navigation}) => {
     }
 
 
-    const { requestPermission, scanForDevices, devices, connectToDevice, currentDevice } = useBLE();
     useEffect(() => {
         requestPermission((result) => {
             if(result) {
@@ -30,16 +32,21 @@ const ScanningScreen = ({navigation}) => {
         });
     }, []);
 
-    const connectAndNavigateToDevice = async (device) => {   
-        if(currentDevice) currentDevice.cancelConnection();
-        await connectToDevice(device);
-        navigation.navigate("Device")
+    const connectAndNavigateToDevice = async (device) => { 
+        // setIsActive(true);
+        currentDevice ? await currentDevice.cancelConnection() : null;
+        await connectToDevice(device).then(() => {
+            console.log(currentDevice.name);
+                navigation.navigate("Device");
+        }).catch((error) => {
+            Alert.alert("Error", error.message);
+        });
     }
 
     return(
             <View style={style.container}>
                 {devices.map((device) => (
-                    <Pressable key={device.id} onPress={() => connectAndNavigateToDevice(device).then(navigation.navigate("Device"))} style={style.deviceItem}>
+                    <Pressable key={device.id} onPress={() => connectAndNavigateToDevice(device)} style={style.deviceItem}>
                         <View>
                             <Text style={style.devName}>{device.name}</Text>
                             <Text style={style.devId}>{device.id}</Text>
@@ -50,7 +57,6 @@ const ScanningScreen = ({navigation}) => {
                         </View>
                     </Pressable>
                 ))}
-                <ActivityIndicator />
             </View>
     )
 }
@@ -59,11 +65,12 @@ const style = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: "center",
+        backgroundColor: "#252526"
     },
     deviceItem: {
         width: "90%",
         height: 100,
-        backgroundColor: "#808080",
+        backgroundColor: "#707070",
         marginVertical: 10,
         padding: 10,
         flexDirection: "row",

@@ -1,8 +1,11 @@
-import {View, Text, StyleSheet} from 'react-native';
-import useBLE from '../ble/useBLE';
+import { useEffect } from 'react';
+import {View, Text, StyleSheet, Alert} from 'react-native';
+import instance from '../ble/useBLE';
 
 const DeviceScreen = ({navigation}) => {
-    const { currentDevice } = useBLE();
+    // const {device} = route.params;
+    console.log(instance.currentDevice);
+
     return(
         <View style={styles.container}>
             <Text style={styles.text}>cau</Text>

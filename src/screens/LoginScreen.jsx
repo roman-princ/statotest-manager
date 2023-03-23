@@ -44,7 +44,7 @@ import { ActivityIndicator } from "react-native-paper";
         {isActive &&
         <View style={{...StyleSheet.absoluteFill, justifyContent: 'center',
         alignItems: 'center', zIndex: 10}}>
-            <ActivityIndicator size="large" color="#8B0000" style={styles.loadingcircle}/>
+            <ActivityIndicator color="#8b0000" style={styles.loadingcircle}/>
             </View>
   }
 
@@ -174,6 +174,7 @@ import { ActivityIndicator } from "react-native-paper";
         fontSize: 28,
         fontWeight: '700',
         lineHeight: 34,
+        fontFamily: "Poppins-SemiBold"
       },
       welcomeView: {
         alignItems: 'center',
@@ -188,8 +189,6 @@ import { ActivityIndicator } from "react-native-paper";
         justifyContent: 'center',
         marginTop: 40,
       },
-      loadingcircle:{
-        zIndex: 1000,
-      },
+      
   });
   

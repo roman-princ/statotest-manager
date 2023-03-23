@@ -1,6 +1,6 @@
 import { Platform, PermissionsAndroid, Alert } from "react-native";
 import { BleError, BleManager, Device, Characteristic, ScanMode } from "react-native-ble-plx";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import { atob, btoa } from "react-native-quick-base64";
 
@@ -15,9 +15,6 @@ const scanningOptions = {
   };
 type PermissionCallback = (result: boolean) => void;
 
-
-const bleManager = new BleManager();
-
 interface BluetoothLowEnergyAPI {
     requestPermission(callback: PermissionCallback) : Promise<void>;
     connectToDevice(device: Device) : Promise<void>;
@@ -29,8 +26,9 @@ interface BluetoothLowEnergyAPI {
     MeasureCommand(): void;
     devices: Device[];
 }
+const bleManager = new BleManager();
 
-export default function useBLE(): BluetoothLowEnergyAPI {
+function useBLE(): BluetoothLowEnergyAPI {
     const [devices, setDevices] = useState<Device[]>([]);
     const [currentDevice, setConnectedDevice] = useState<Device | null>(null);
     const [ChesterData, setData] = useState<string>("");
@@ -127,7 +125,8 @@ export default function useBLE(): BluetoothLowEnergyAPI {
             );
         }
     };
-
-
     return { requestPermission, scanForDevices, devices, connectToDevice, startStreamingData, currentDevice, ChesterData, onDataReceived, MeasureCommand };
 }
+export default useBLE;
+
+

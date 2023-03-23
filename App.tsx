@@ -5,10 +5,11 @@ import BleScreen from "./src/screens/BleScreen"
 import LoginScreen from './src/screens/LoginScreen';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+
 const MainScreen = () => {
   return (
     <NavigationContainer>
-        <Tab.Navigator theme={DarkTheme}>
+        <Tab.Navigator>
         <Tab.Screen name="Login" component={LoginScreen}
         options={{
           tabBarIcon: ({ color }) => (
