@@ -1,6 +1,7 @@
 import { Platform, PermissionsAndroid, Alert } from "react-native";
 import { BleError, BleManager, Device, Characteristic, ScanMode } from "react-native-ble-plx";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useBetween } from "use-between";
 
 import { atob, btoa } from "react-native-quick-base64";
 
@@ -23,7 +24,8 @@ interface BluetoothLowEnergyAPI {
     scanForDevices() : void;
     startStreamingData(device: Device) : void;
     onDataReceived(error : Error | null, characteristic: Characteristic|null) : void;
-    MeasureCommand(): void;
+    sendCommand(command: string): void;
+    stopAndStartScan(): void;
     devices: Device[];
 }
 const bleManager = new BleManager();
@@ -32,14 +34,13 @@ function useBLE(): BluetoothLowEnergyAPI {
     const [devices, setDevices] = useState<Device[]>([]);
     const [currentDevice, setConnectedDevice] = useState<Device | null>(null);
     const [ChesterData, setData] = useState<string>("");
-
     const requestPermission = async (callback: PermissionCallback) => {
         if(Platform.OS === "android") {
             const grantedStatus = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
                 {
                     title: "Bluetooth Permission",
-                    message: "This app needs access to your bluetooth ",
+                    message: "This app needs access to your bluetooth to scan for CHESTER senosrs",
                     buttonNeutral: "Ask Me Later",
                     buttonNegative: "Cancel",
                     buttonPositive: "OK"
@@ -57,7 +58,10 @@ function useBLE(): BluetoothLowEnergyAPI {
     const scanForDevices = () => {
         bleManager.startDeviceScan(null, scanningOptions, (error, device) => {
             if(error) {
-                console.log(error);
+                console.log(JSON.stringify(error.errorCode));
+                if(error.errorCode === 600) {
+                    Alert.alert("Restart Bluetooth.");
+                }
                 return;
             }
             if(device && device.name?.includes("CHESTER")) {
@@ -75,10 +79,12 @@ function useBLE(): BluetoothLowEnergyAPI {
         try{
             await bleManager.connectToDevice(device.id).then(async (device1: Device) => {
                 setConnectedDevice(device1)
+                await device1.discoverAllServicesAndCharacteristics();
             });
-            bleManager.stopDeviceScan();
+            // bleManager.stopDeviceScan();
         }catch(error) {
-            Alert.alert("There was an error connecting to the device, please try again.");
+            console.log(JSON.stringify(error));
+            
         }
     };
 
@@ -87,17 +93,11 @@ function useBLE(): BluetoothLowEnergyAPI {
             device.monitorCharacteristicForService(
                 CHESTER_SERVICE_UUID,
                 CHESTER_RECIEVE_CHARACTERISTIC_UUID,
-                (error, characteristic) => {
-                    if (error) {
-                        console.log(error);
-                        return;
-                    }
-                    console.log(characteristic?.value);
-                }
+                (error, characteristic) => onDataReceived(error, characteristic) 
             );
         }
         else {
-            Alert.alert("No device connected");
+            console.log("No device connected");
         }
     }
     const onDataReceived = (
@@ -105,7 +105,7 @@ function useBLE(): BluetoothLowEnergyAPI {
         characteristic: Characteristic | null
     ) => {
         if (error) {
-            Alert.alert("There was an error while receiving data from the device");
+            Alert.alert("There was an error while receiving data from the device", error.message);
             return;
         }else if (!characteristic?.value) {
             Alert.alert("No characteristic found (Are you sure you're connected to the right device?)");
@@ -113,20 +113,29 @@ function useBLE(): BluetoothLowEnergyAPI {
         }
         
         const decodedData = atob(characteristic.value);
-        return setData(decodedData);
+        const strToAdd = ChesterData.concat(decodedData);
+        console.log(ChesterData)
+        return setData(strToAdd);
+        
 
     };
-    const MeasureCommand = () => {
+    const sendCommand = (command: string) => {
         if (currentDevice) {
             currentDevice.writeCharacteristicWithResponseForService(
                 CHESTER_SERVICE_UUID,
                 CHESTER_SEND_CHARACTERISTIC_UUID,
-                btoa("stt measure\r\n")
+                btoa(command + "\r\n")
             );
         }
     };
-    return { requestPermission, scanForDevices, devices, connectToDevice, startStreamingData, currentDevice, ChesterData, onDataReceived, MeasureCommand };
+    const stopAndStartScan = () => {
+        bleManager.stopDeviceScan();
+        scanForDevices();
+    }
+    
+    return { requestPermission, scanForDevices, devices, connectToDevice, startStreamingData, currentDevice, ChesterData, onDataReceived, sendCommand, stopAndStartScan};
 }
-export default useBLE;
+const useBleContext = () => useBetween(useBLE);
+export default useBleContext;
 
 

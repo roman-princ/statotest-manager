@@ -1,15 +1,30 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, Alert, ActivityIndicator} from 'react-native';
-import useBLE from "../ble/useBLE";
+import { View, Text, StyleSheet, Pressable, Image, Alert, Animated} from 'react-native';
+import useBleContext from "../ble/useBLE";
 import high from "../../assets/images/high.png"
 import mid from "../../assets/images/mid.png"
 import low from "../../assets/images/low.png"
 import styles from '../../assets/style/styles.jsx';
-
+import Indicator from '../components/Indicator';
 
 const ScanningScreen = ({navigation}) => {
-    const {currentDevice, scanForDevices, requestPermission, devices} = useBLE();
-    const [isActive, setIsActive] = useState(false);
+    const animated = new Animated.Value(1);
+  const fadeIn = () => {
+    Animated.timing(animated, {
+      toValue: 0.4,
+      duration: 100,
+      useNativeDriver: true,
+    }).start();
+  };
+  const fadeOut = () => {
+    Animated.timing(animated, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  };
+    const {currentDevice, scanForDevices, requestPermission, devices, connectToDevice, startStreamingData} = useBleContext();
+    const [isActive, setIsActive] = useState(true);
     const rssiConverter = (rssi) =>{
         if(rssi > -50){
             return high;
@@ -34,19 +49,16 @@ const ScanningScreen = ({navigation}) => {
 
     const connectAndNavigateToDevice = async (device) => { 
         // setIsActive(true);
-        currentDevice ? await currentDevice.cancelConnection() : null;
-        await connectToDevice(device).then(() => {
-            console.log(currentDevice.name);
-                navigation.navigate("Device");
-        }).catch((error) => {
-            Alert.alert("Error", error.message);
-        });
+        await connectToDevice(device);
+        await startStreamingData(currentDevice).then(() => {
+            navigation.navigate("Device");
+        })
     }
 
     return(
             <View style={style.container}>
                 {devices.map((device) => (
-                    <Pressable key={device.id} onPress={() => connectAndNavigateToDevice(device)} style={style.deviceItem}>
+                    <Pressable key={device.id} onPress={() => connectAndNavigateToDevice(device)} style={style.deviceItem} onPressIn={fadeIn} onPressOut={fadeOut}>
                         <View>
                             <Text style={style.devName}>{device.name}</Text>
                             <Text style={style.devId}>{device.id}</Text>
