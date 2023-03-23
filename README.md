@@ -1,13 +1,13 @@
 # Statotest manager
 A mobile app for Statotest startup used for managing their CHESTER IoT sensors
-# ❔Usage
+## ❓Usage
 Manage your CHESTER sensors made by HARDWARIO a.s. company.
 * Connect to the sensor and communicate through command line
 * Take a look at your measuring points, constructions and measuring points data provided by the API
 * Update the sensors firmware over DFU OTA protocol
 * Measure the data on sensors
 
-##✨Features
+## ✨Features
 * Discover you devices and measuring point through the RESTful API
 * Scan the nearby BLE devices
 * Write bytes to the device through a command line
