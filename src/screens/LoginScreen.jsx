@@ -51,7 +51,7 @@ import { ActivityIndicator } from "react-native-paper";
         <View style={styles.logoView}>
           <Image source={require("../../assets/images/logo.png")} style={styles.logo} />
         </View>
-        <SizedBox height={100} />
+        <SizedBox height={70} />
         <SafeAreaView style={styles.container}>
           <View style={styles.welcomeView}>
             <Text style={styles.title}>Welcome back!</Text>
@@ -157,6 +157,7 @@ import { ActivityIndicator } from "react-native-paper";
         fontSize: 17,
         fontWeight: '400',
         lineHeight: 22,
+        fontFamily: "Poppins-Regular"
       },
       textButton: {
         color: '#FFFFFF',
