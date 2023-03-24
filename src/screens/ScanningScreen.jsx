@@ -82,7 +82,7 @@ const style = StyleSheet.create({
     deviceItem: {
         width: "90%",
         height: 100,
-        backgroundColor: "#707070",
+        backgroundColor: "#484848",
         marginVertical: 10,
         padding: 10,
         flexDirection: "row",

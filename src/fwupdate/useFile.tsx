@@ -5,7 +5,7 @@ import DocumentPicker, {
     isInProgress,
     types,
   } from 'react-native-document-picker'
-import { Alert } from "react-native";
+import { Alert, NativeModules } from "react-native";
 
     const useFile = () => {
     const [file, setFile] = React.useState<DocumentPickerResponse | DirectoryPickerResponse | null>();
@@ -38,4 +38,5 @@ import { Alert } from "react-native";
 
     return {pickFile, file}
     };
+
 export default useFile;

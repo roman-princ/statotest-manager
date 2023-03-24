@@ -44,7 +44,7 @@ const DeviceScreen = ({navigation}) => {
                     <View style={styles.form}>
                         <TextInput
                             autoCapitalize="none"
-                            placeholder="Enter Command..."
+                            placeholder="Command..."
                             placeholderTextColor={"rgba(235, 235, 245, 0.6)"}
                             autoCorrect={false}
                             onChangeText={(text) => setCommand(text)}
@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
     textInput: {
         color: '#FFFFFF',
         fontSize: 15,
+        width: "100%",
         fontFamily: "Poppins-Medium",
         backgroundColor: "#353535",
     },

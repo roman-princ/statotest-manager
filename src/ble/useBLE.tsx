@@ -114,13 +114,12 @@ function useBLE(): BluetoothLowEnergyAPI {
         }
         
         const decodedData = atob(characteristic.value);
-        const strToAdd = ChesterData.concat(decodedData);
-        console.log(ChesterData)
-        return setData(strToAdd);
+        return setData((prevState) => prevState + decodedData);
         
 
     };
     const sendCommand = (command: string) => {
+        setData("");
         if (currentDevice) {
             currentDevice.writeCharacteristicWithResponseForService(
                 CHESTER_SERVICE_UUID,
