@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, Alert, Animated} from 'react-native';
+import { useEffect, useState, useCallback } from 'react';
+import { View, Text, StyleSheet, Pressable, Image, RefreshControl, Animated, ScrollView} from 'react-native';
 import useBleContext from "../ble/useBLE";
 import high from "../../assets/images/high.png"
 import mid from "../../assets/images/mid.png"
@@ -8,23 +8,9 @@ import styles from '../../assets/style/styles.jsx';
 import Indicator from '../components/Indicator';
 
 const ScanningScreen = ({navigation}) => {
-    const animated = new Animated.Value(1);
-  const fadeIn = () => {
-    Animated.timing(animated, {
-      toValue: 0.4,
-      duration: 100,
-      useNativeDriver: true,
-    }).start();
-  };
-  const fadeOut = () => {
-    Animated.timing(animated, {
-      toValue: 1,
-      duration: 200,
-      useNativeDriver: true,
-    }).start();
-  };
-    const {currentDevice, scanForDevices, requestPermission, devices, connectToDevice, startStreamingData} = useBleContext();
-    const [isActive, setIsActive] = useState(true);
+    const {currentDevice, scanForDevices, requestPermission, devices, connectToDevice, startStreamingData, stopAndStartScan} = useBleContext();
+    const [isActive, setIsActive] = useState(false);
+    const [IndicatorIsActive, setIndicatorIsActive] = useState(false);
     const rssiConverter = (rssi) =>{
         if(rssi > -50){
             return high;
@@ -47,18 +33,29 @@ const ScanningScreen = ({navigation}) => {
         });
     }, []);
 
-    const connectAndNavigateToDevice = async (device) => { 
-        // setIsActive(true);
-        await connectToDevice(device);
-        await startStreamingData(currentDevice).then(() => {
-            navigation.navigate("Device");
-        })
-    }
+    const connectAndNavigateToDevice = useCallback(async (device) => { 
+            setIndicatorIsActive(true);
+            await connectToDevice(device).then(() => {
+                navigation.navigate("Device");
+            })
+            setIndicatorIsActive(false);
+        }, []);
+    
+
+    const onRefresh = useCallback(() => {
+        setIsActive(true);
+        stopAndStartScan();
+        setIsActive(false);
+    }, []);
 
     return(
+        <>
+        <ScrollView style={{flexGrow: 1, backgroundColor: "#252526"}} refreshControl={
+            <RefreshControl refreshing={isActive} onRefresh={onRefresh}/>
+        }>
             <View style={style.container}>
                 {devices.map((device) => (
-                    <Pressable key={device.id} onPress={() => connectAndNavigateToDevice(device)} style={style.deviceItem} onPressIn={fadeIn} onPressOut={fadeOut}>
+                    <Pressable key={device.id} onPress={() => connectAndNavigateToDevice(device)} style={style.deviceItem}>
                         <View>
                             <Text style={style.devName}>{device.name}</Text>
                             <Text style={style.devId}>{device.id}</Text>
@@ -70,6 +67,9 @@ const ScanningScreen = ({navigation}) => {
                     </Pressable>
                 ))}
             </View>
+        </ScrollView>
+        <Indicator active={IndicatorIsActive} />
+        </>
     )
 }
 

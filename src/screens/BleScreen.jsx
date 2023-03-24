@@ -25,6 +25,14 @@ const BleScreen = () => {
             }} component={DeviceScreen} />
             <Stack.Screen name="FwScreen" options={{
                 headerShown: true,
+                headerStyle: {
+                    backgroundColor: '#252526',
+                },
+                headerTitleStyle: {
+                    color: '#fff',
+                    fontFamily: "Poppins-SemiBold",
+                },
+                headerTintColor: '#fff',
             }} component={FwScreen} />
 
         </Stack.Navigator>

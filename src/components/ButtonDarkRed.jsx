@@ -1,10 +1,10 @@
 import {Pressable, Text, StyleSheet, View} from 'react-native';
 import useBleContext from '../ble/useBLE';
-const ButtonDarkRed = ({text, args}) => {
+const ButtonDarkRed = ({text, args, disabled}) => {
     const {sendCommand} = useBleContext();
     return(
         <View>
-            <Pressable style={styles.button} onPress={() => sendCommand(args)}>
+            <Pressable style={styles.button} onPress={() => sendCommand(args)} disabled={disabled}>
                 <Text style={styles.buttonTitle}>{text}</Text>
             </Pressable>
         </View>

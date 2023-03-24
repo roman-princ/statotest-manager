@@ -26,6 +26,7 @@ interface BluetoothLowEnergyAPI {
     onDataReceived(error : Error | null, characteristic: Characteristic|null) : void;
     sendCommand(command: string): void;
     stopAndStartScan(): void;
+    handleDisconnect(): void;
     devices: Device[];
 }
 const bleManager = new BleManager();
@@ -130,10 +131,18 @@ function useBLE(): BluetoothLowEnergyAPI {
     };
     const stopAndStartScan = () => {
         bleManager.stopDeviceScan();
+        setDevices([]);
         scanForDevices();
     }
+
+    const handleDisconnect = () => {
+        if (currentDevice) {
+            currentDevice.cancelConnection();
+            setConnectedDevice(null);
+        }
+    };
     
-    return { requestPermission, scanForDevices, devices, connectToDevice, startStreamingData, currentDevice, ChesterData, onDataReceived, sendCommand, stopAndStartScan};
+    return { requestPermission, scanForDevices, devices, connectToDevice, startStreamingData, currentDevice, ChesterData, onDataReceived, sendCommand, stopAndStartScan, handleDisconnect};
 }
 const useBleContext = () => useBetween(useBLE);
 export default useBleContext;
