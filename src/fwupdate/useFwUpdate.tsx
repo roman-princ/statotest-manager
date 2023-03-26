@@ -4,19 +4,18 @@ import {DocumentPickerResponse} from "react-native-document-picker";
 
 const useFwUpdate = (
     bleId: string | null,
-    file: DocumentPickerResponse | null,
+    fileUri: string | null,
     upgradeMode?: UpgradeMode
 ) => {
 
     const [progress, setProgress] = useState(0);
     const [state, setState] = useState("");
     const upgradeRef = useRef<Upgrade>();
-    // nevím proč to nefunguje a je tam syntax error, hodit do chatbota
     useEffect(() => {
-        if(!bleId || !upgradeMode){
+        if(!bleId || !fileUri){
             return () => null;
         }
-        const upgrade = new Upgrade(bleId, file?.uri, {
+        const upgrade = new Upgrade(bleId, fileUri, {
             estimatedSwapTime: 60,
             upgradeMode,
           });
@@ -44,7 +43,7 @@ const useFwUpdate = (
             upgrade.cancel();
             upgrade.destroy();
           };
-    }, [bleId, upgradeMode, upgradeMode]);
+    }, [bleId, upgradeMode, fileUri]);
     const runUpdate = async (): Promise<void> => {
         try {
           if (!upgradeRef.current) {

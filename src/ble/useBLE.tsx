@@ -78,19 +78,22 @@ function useBLE(): BluetoothLowEnergyAPI {
 
     const connectToDevice = async (device: Device) => {
         try{
+            setData("");
             await bleManager.connectToDevice(device.id).then(async (device1: Device) => {
                 setConnectedDevice(device1)
-                await device1.discoverAllServicesAndCharacteristics();
+                await device1.discoverAllServicesAndCharacteristics()
+                device1.onDisconnected(() => {
+                    console.log("device disconnected");
+                });
             });
             // bleManager.stopDeviceScan();
         }catch(error) {
             console.log(JSON.stringify(error));
-            
         }
     };
 
     const startStreamingData = async (device: Device) => {
-        if (device) {
+        if (device != null) {
             device.monitorCharacteristicForService(
                 CHESTER_SERVICE_UUID,
                 CHESTER_RECIEVE_CHARACTERISTIC_UUID,
@@ -106,7 +109,7 @@ function useBLE(): BluetoothLowEnergyAPI {
         characteristic: Characteristic | null
     ) => {
         if (error) {
-            Alert.alert("There was an error while receiving data from the device", error.message);
+            console.log(JSON.stringify(error));
             return;
         }else if (!characteristic?.value) {
             Alert.alert("No characteristic found (Are you sure you're connected to the right device?)");
@@ -136,8 +139,10 @@ function useBLE(): BluetoothLowEnergyAPI {
 
     const handleDisconnect = () => {
         if (currentDevice) {
-            currentDevice.cancelConnection();
-            setConnectedDevice(null);
+            currentDevice.cancelConnection().then(() => {
+                setConnectedDevice(null);
+                stopAndStartScan();
+            });
         }
     };
     

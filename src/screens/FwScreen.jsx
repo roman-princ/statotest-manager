@@ -6,13 +6,14 @@ import useFwUpdate from "../fwupdate/useFwUpdate";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {UpgradeMode} from "@playerdata/react-native-mcu-manager";
 import SizedBox from "../components/SizedBox";
+import { Bar } from "react-native-progress";
 
 const FwScreen = ({navigation}) => {
     const {pickFile, file} = useFile()
     const {currentDevice, sendCommand, ChesterData} = useBleContext();
     const {cancelUpdate, runUpdate, progress, state} = useFwUpdate(
         currentDevice.id,
-        file || null,
+        file?.uri || null,
         UpgradeMode.TEST_ONLY
     );
     useEffect(() => {
@@ -42,8 +43,13 @@ const FwScreen = ({navigation}) => {
                     <Text style={styles.buttonTitle}>Upload</Text>
                 </View>
             </Pressable>
-            <Text>{state}</Text>
-            <Text>{progress}</Text>
+            <View style={{flexDirection: "row", justifyContent: "center", flex: 1, alignItems: "center", height: 30}}>
+                <Bar progress={progress / 100} width={200} height={10} color="#8B0000" />
+                <Text style={[styles.text, {marginLeft: 10}]}>{progress}%</Text>
+            </View>
+            <Text style={styles.text}>State: {state}</Text>
+
+            
         </View>
     )
 }

@@ -24,7 +24,6 @@ const ScanningScreen = ({navigation}) => {
 
     }
 
-
     useEffect(() => {
         requestPermission((result) => {
             if(result) {

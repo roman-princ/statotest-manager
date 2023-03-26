@@ -19,10 +19,6 @@ const DeviceScreen = ({navigation}) => {
             }
         }
         asyncFn();
-        return () => {
-            setIsDisabled(true);
-            navigation.goBack();
-        }
 
     }, [currentDevice]);
 
@@ -32,9 +28,9 @@ const DeviceScreen = ({navigation}) => {
         <View style={styles.container}>
             <View style={styles.buttons}>
                 <ButtonDarkRed text="Measure" args={"stt measure"} disabled={isDisabled}/>
-                <ButtonDarkRed text="Config" args={"mcuboot"} disabled={isDisabled} />
+                <ButtonDarkRed text="Config" args={"stt config show"} disabled={isDisabled} />
             <Pressable style={styles.button} onPress={() => navigation.navigate("FwScreen")} disabled={isDisabled}>
-                <Text style={styles.buttonTitle}>FW Update</Text>
+                <Text style={styles.buttonTitle}>Firmware</Text>
             </Pressable>
             </View>
             <ScrollView style={styles.scrollView}>
