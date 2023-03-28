@@ -10,44 +10,52 @@ import {
     TextInput,
     TouchableOpacity,
     View,
+    Keyboard,
   } from "react-native";
-  import React, { useState } from "react";
-  //   import { Context } from '../provider/AppProvider';
+  import React, { useCallback, useState } from "react";
+  import AsyncStorage from '@react-native-async-storage/async-storage';
   import axios from "axios";
   import SizedBox from "../components/SizedBox";
-import { ActivityIndicator } from "react-native-paper";
+  import Indicator from "../components/Indicator";
   
-  export default function LoginScreen() {
+  export default function LoginScreen({navigation}) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isActive, setIsActive] = useState(false);
   
-    const handleLogin = () => {
-      axios
+    const handleLogin = useCallback(async () => {
+      Keyboard.dismiss();
+      setIsActive(true);
+      await axios
         .post("https://statotestapi.azurewebsites.net/Accounts/authenticate", {
           email: email,
           password: password,
         })
         .then((response) => {
-          alert(response.data.jwtToken);
+          try{
+            let token = JSON.stringify(response.data.jwtToken);
+            AsyncStorage.setItem("@token", token).then(() => {
+              setTimeout(() => {
+              navigation.navigate("Company");
+              }, 1000);
+            }
+            );
+          }
+          catch(e){
+            Alert.alert(e.message);
+          }
         })
         .catch((error) => {
-          alert(error.message);
+          Alert.alert(error.message);
         });
         setIsActive(false);
-    };
+    });
     return (
+      <>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.content}
       >
-        {isActive &&
-        <View style={{...StyleSheet.absoluteFill, justifyContent: 'center',
-        alignItems: 'center', zIndex: 10}}>
-            <ActivityIndicator color="#8b0000" style={styles.loadingcircle}/>
-            </View>
-  }
-
         <View style={styles.logoView}>
           <Image source={require("../../assets/images/logo.png")} style={styles.logo} />
         </View>
@@ -105,6 +113,8 @@ import { ActivityIndicator } from "react-native-paper";
           </Pressable>
         </SafeAreaView>
       </KeyboardAvoidingView>
+      <Indicator active={isActive} />
+      </>
     );
   }
   const styles = StyleSheet.create({

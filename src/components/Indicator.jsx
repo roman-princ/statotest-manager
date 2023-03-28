@@ -4,8 +4,8 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 const Indicator = ({ active }) => {
     return (
         active &&
-        <View style={{...StyleSheet.absoluteFill, justifyContent: "center", alignItems: "center", zIndex: 10 }}>
-            <ActivityIndicator color="#8b0000" size={'large'} style={styles.loadingcircle} />
+        <View style={{...StyleSheet.absoluteFill, justifyContent: "center", alignItems: "center", zIndex: 1000 }}>
+            <ActivityIndicator color="#8b0000" size={'large'} style={[styles.loadingcircle, {zIndex: 1000}]} />
         </View>
     );
 };

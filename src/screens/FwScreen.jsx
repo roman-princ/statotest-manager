@@ -37,7 +37,7 @@ const FwScreen = ({navigation}) => {
                     <Text style={styles.buttonTitle}>{file ? file.name : "Pick a file"}</Text>
                 </View>
             </Pressable>
-            <Pressable onPress={() => runUpdate()} style={{width: "50%", marginBottom: 10}} disabled={file ? false : true }>
+            <Pressable onPress={() => runUpdate()} style={{width: "91%", marginBottom: 10}} disabled={file ? false : true }>
                 <View style={styles.uploadButton}>
                     <Icon name="cloud-upload" size={30} color="#FFFFFF" style={{marginRight: 5}}/>
                     <Text style={styles.buttonTitle}>Upload</Text>
@@ -48,8 +48,6 @@ const FwScreen = ({navigation}) => {
                 <Text style={[styles.text, {marginLeft: 10}]}>{progress}%</Text>
             </View>
             <Text style={styles.text}>State: {state}</Text>
-
-            
         </View>
     )
 }

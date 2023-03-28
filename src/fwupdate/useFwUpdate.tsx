@@ -1,6 +1,5 @@
 import {Upgrade, UpgradeMode} from "@playerdata/react-native-mcu-manager"
 import {useEffect, useState, useRef} from "react"
-import {DocumentPickerResponse} from "react-native-document-picker";
 
 const useFwUpdate = (
     bleId: string | null,

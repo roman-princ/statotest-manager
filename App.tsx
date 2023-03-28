@@ -1,12 +1,28 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import BleScreen from "./src/screens/BleScreen"
-import LoginScreen from './src/screens/LoginScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import DataScreen from './src/screens/DataScreen';
+import { useEffect, useState } from 'react';
+import { hideNavigationBar } from 'react-native-navigation-bar-color';
+import { Platform } from 'react-native';
 
 
 const Tab = createBottomTabNavigator();
 const App = () => {
+  const [token, setToken] = useState("")
+  useEffect(() => {
+    if(Platform.OS === 'android') {
+      hideNavigationBar();
+    }
+    AsyncStorage.getItem("token").then((value) => {
+      if (value) {
+        setToken(value)
+      }
+    }
+    )
+  }, []);
   return (
     <NavigationContainer theme={DarkTheme}>
         <Tab.Navigator screenOptions={{
@@ -22,11 +38,12 @@ const App = () => {
             },
             tabBarHideOnKeyboard: true,
         }}>
-        <Tab.Screen name="Login" component={LoginScreen}
+        <Tab.Screen name="Login" component={DataScreen}
         options={{
           tabBarIcon: () => (
-            <Icon name="login" color={"#8b0000"} size={26} />
+            <Icon name={token ? "apartment" : "login"} color={"#8b0000"} size={26} />
           ),
+          title: token ? "Dashboard" : "Login",
           
         }}
         />
