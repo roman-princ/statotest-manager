@@ -5,17 +5,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import DataScreen from './src/screens/DataScreen';
 import { useEffect, useState } from 'react';
-import { hideNavigationBar } from 'react-native-navigation-bar-color';
 import { Platform } from 'react-native';
+import {trigger} from "react-native-haptic-feedback"
 
 
 const Tab = createBottomTabNavigator();
 const App = () => {
   const [token, setToken] = useState("")
   useEffect(() => {
-    if(Platform.OS === 'android') {
-      hideNavigationBar();
-    }
+    
     AsyncStorage.getItem("token").then((value) => {
       if (value) {
         setToken(value)
@@ -24,7 +22,7 @@ const App = () => {
     )
   }, []);
   return (
-    <NavigationContainer theme={DarkTheme}>
+    <NavigationContainer theme={DarkTheme} onStateChange={() => trigger("impactLight", { enableVibrateFallback: true, ignoreAndroidSystemSettings: false } )}>
         <Tab.Navigator screenOptions={{
             headerShown: false,
             tabBarStyle: {

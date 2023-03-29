@@ -22,6 +22,7 @@
     "react-native-ble-plx": "^2.0.3",
     "react-native-document-picker": "^8.2.0",
     "react-native-get-random-values": "^1.8.0",
+    "react-native-haptic-feedback": "^2.0.2",
     "react-native-navigation-bar-color": "^2.0.2",
     "react-native-paper": "^5.4.1",
     "react-native-progress": "^5.0.0",

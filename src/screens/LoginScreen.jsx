@@ -17,6 +17,7 @@ import {
   import axios from "axios";
   import SizedBox from "../components/SizedBox";
   import Indicator from "../components/Indicator";
+  import { trigger } from "react-native-haptic-feedback";
   
   export default function LoginScreen({navigation}) {
     const [email, setEmail] = useState("");
@@ -24,6 +25,7 @@ import {
     const [isActive, setIsActive] = useState(false);
   
     const handleLogin = useCallback(async () => {
+      trigger("impactLight", { enableVibrateFallback: true, ignoreAndroidSystemSettings: false })
       Keyboard.dismiss();
       setIsActive(true);
       await axios

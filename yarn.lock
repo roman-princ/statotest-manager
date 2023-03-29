@@ -6143,6 +6143,11 @@ react-native-gradle-plugin@^0.71.16:
   resolved "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.16.tgz"
   integrity sha512-H2BjG2zk7B7Wii9sXvd9qhCVRQYDAHSWdMw9tscmZBqSP62DkIWEQSk4/B2GhQ4aK9ydVXgtqR6tBeg3yy8TSA==
 
+react-native-haptic-feedback@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/react-native-haptic-feedback/-/react-native-haptic-feedback-2.0.2.tgz"
+  integrity sha512-amt0zw5UYNtEj3a8eb7Do/brOmbvdTEeEhSDqfhlyg1BNSSrkfwQAy69iDXtxPP+83zO9by3swJuhrFRMMqbUA==
+
 react-native-navigation-bar-color@^2.0.2:
   version "2.0.2"
   resolved "https://registry.npmjs.org/react-native-navigation-bar-color/-/react-native-navigation-bar-color-2.0.2.tgz"
@@ -6200,7 +6205,7 @@ react-native-vector-icons@*, react-native-vector-icons@^9.2.0, "react-native-vec
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
-react-native@*, "react-native@^0.0.0-0 || 0.60 - 0.71 || 1000.0.0", react-native@>=0.56, react-native@0.71.4:
+react-native@*, "react-native@^0.0.0-0 || 0.60 - 0.71 || 1000.0.0", react-native@>=0.56, react-native@>=0.60.0, react-native@0.71.4:
   version "0.71.4"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.71.4.tgz"
   integrity sha512-3hSYqvWrOdKhpV3HpEKp1/CkWx8Sr/N/miCrmUIAsVTSJUR7JW0VvIsrV9urDhUj/s6v2WF4n7qIEEJsmTCrPw==
