@@ -13,7 +13,6 @@ const Tab = createBottomTabNavigator();
 const App = () => {
   const [token, setToken] = useState("")
   useEffect(() => {
-    
     AsyncStorage.getItem("token").then((value) => {
       if (value) {
         setToken(value)
@@ -39,9 +38,9 @@ const App = () => {
         <Tab.Screen name="Login" component={DataScreen}
         options={{
           tabBarIcon: () => (
-            <Icon name={token ? "apartment" : "login"} color={"#8b0000"} size={26} />
+            <Icon name={"apartment"} color={"#8b0000"} size={26} />
           ),
-          title: token ? "Dashboard" : "Login",
+          title: "Dashboard"
           
         }}
         />

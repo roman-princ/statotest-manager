@@ -4,15 +4,17 @@ import { useCallback, useEffect, useState } from 'react';
 import { View, Pressable, Text, StyleSheet, Alert, ScrollView } from 'react-native';
 import { trigger } from 'react-native-haptic-feedback';
 import { Button } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import Indicator from '../components/Indicator';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-
-const CompanyScreen = ({navigation}) => {
+const MPScreen = ({route, navigation}) => {
     const [isActive, setIsActive] = useState(true);
-    const [companies, setCompanies] = useState(null);
+    const [MPs, setMPs] = useState(null);
     const FetchCompanies = async (token) => {
-            await axios.post("https://statotestapi.azurewebsites.net/Company/Get",{}, 
+            await axios.post("https://statotestapi.azurewebsites.net/MP/get",{
+                compId: route.params?.compId,
+                consId: route.params?.consId
+            }, 
             {
                 headers:{
                     'Authorization': String(token).replace(/['"]+/g, ''),
@@ -20,35 +22,35 @@ const CompanyScreen = ({navigation}) => {
                 }
             }
             ).then((response) => {
-                setCompanies(response.data);
+                setMPs(response.data);
             }).catch((error) => {
-                Alert.alert("Error", "Something went wrong");
+                console.log(JSON.stringify(error));
+                // Alert.alert("Error", "Something went wrong");
+                // navigation.goBack();
             })
-           trigger("notificationSuccess", {ignoreAndroidSystemSettings: false, enableVibrateFallback: true})
-    }
+            trigger("notificationSuccess", {ignoreAndroidSystemSettings: false, enableVibrateFallback: true})
+        }
     useEffect(() => {
         AsyncStorage.getItem("@token").then((token) => {
             FetchCompanies(token)
     })
     }, [])
 
-    const goToConstr = (id) => {
-        console.log("id", id)
+    const goToDevice = (mpId) => {
         trigger("impactLight", {ignoreAndroidSystemSettings: false, enableVibrateFallback: true})
-        navigation.navigate("Construction", {id: id})
-     }
+        navigation.navigate("DeviceInfo", {consId: route.params.conId, compId: route.params.compId, mpId: mpId})
+    }
     return(
         <ScrollView scrollEnabled={true} style={styles.scrollView}>
-            <Indicator isActive={isActive} />
             <View style={styles.container}>
-            {companies && companies.map((company) => {
+            {MPs !== null ? MPs.map((MP) => {
                 return(
-                    <Pressable key={company.compId} style={styles.button} onPress={() => goToConstr(company.compId)}>
-                            <Text style={styles.text}>{company.compName}</Text>
-                            <Icon name="navigate-next" size={30} color="#fff" />
+                    <Pressable key={MP.mpId} style={styles.button} onPress={() => goToDevice(MP.mpId)}>
+                        <Text style={styles.text}>{MP.mpName}</Text>
+                        <Icon name="navigate-next" size={30} color="#fff" />
                     </Pressable>
                 )
-            })}
+            }): <Indicator active={true}/>}
         </View>
         </ScrollView>
         
@@ -88,4 +90,4 @@ const styles = StyleSheet.create({
         height: '100%',
     }
 });
-export default CompanyScreen;
+export default MPScreen;

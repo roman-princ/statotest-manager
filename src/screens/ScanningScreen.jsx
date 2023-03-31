@@ -92,7 +92,8 @@ const style = StyleSheet.create({
     },
     devName: {
         fontFamily: "Poppins-SemiBold",
-        fontSize: 16
+        fontSize: 16,
+        color: "#fff"
     },
     rssiContainer: {
         flexDirection: "column",
@@ -101,9 +102,11 @@ const style = StyleSheet.create({
     devId: {
         fontFamily: "Poppins-Medium",
         fontSize: 12,
+        color: "#fff"
     },
     rssiValue: {
         fontFamily: "Poppins-Medium",
+        color: "#fff",
     }
 });
 export default ScanningScreen;
