@@ -14,7 +14,7 @@ const FwScreen = ({navigation}) => {
     const {cancelUpdate, runUpdate, progress, state} = useFwUpdate(
         currentDevice.id,
         file?.uri || null,
-        UpgradeMode.TEST_ONLY
+        UpgradeMode.TEST_AND_CONFIRM
     );
     useEffect(() => {
         if (currentDevice){
@@ -43,11 +43,11 @@ const FwScreen = ({navigation}) => {
                     <Text style={styles.buttonTitle}>Upload</Text>
                 </View>
             </Pressable>
-            <View style={{flexDirection: "row", justifyContent: "center", flex: 1, alignItems: "center", height: 30}}>
+            <View style={{flexDirection: "row", justifyContent: "center", flex: 1, alignItems: "center", height: 30, opacity: state === "UPLOAD" || state ==="RESET"? 100 : 0}}>
                 <Bar progress={progress / 100} width={200} height={10} color="#8B0000" />
                 <Text style={[styles.text, {marginLeft: 10}]}>{progress}%</Text>
             </View>
-            <Text style={styles.text}>State: {state}</Text>
+            <Text style={[styles.text, {opacity: state === "UPLOAD" || state ==="RESET"? 100 : 0}]}>State: {state}</Text>
         </View>
     )
 }

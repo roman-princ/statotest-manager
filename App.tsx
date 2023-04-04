@@ -7,11 +7,14 @@ import DataScreen from './src/screens/DataScreen';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import {trigger} from "react-native-haptic-feedback"
+import useBleContext from './src/ble/useBLE';
+import { navigate, navigationRef } from './src/navigation/RootNavigation';
 
 
 const Tab = createBottomTabNavigator();
 const App = () => {
   const [token, setToken] = useState("")
+  const {currentDevice} = useBleContext();
   useEffect(() => {
     AsyncStorage.getItem("token").then((value) => {
       if (value) {
@@ -20,8 +23,10 @@ const App = () => {
     }
     )
   }, []);
+
   return (
-    <NavigationContainer theme={DarkTheme} onStateChange={() => trigger("impactLight", { enableVibrateFallback: true, ignoreAndroidSystemSettings: false } )}>
+    //nějak se to cyklí, když se připojím k BLE, tak se provede trigger několikrát
+    <NavigationContainer /*ref={navigationRef}*/ theme={DarkTheme} onStateChange={() => trigger("impactLight", { enableVibrateFallback: true, ignoreAndroidSystemSettings: false } )}>
         <Tab.Navigator screenOptions={{
             headerShown: false,
             tabBarStyle: {

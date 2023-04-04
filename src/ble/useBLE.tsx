@@ -1,7 +1,9 @@
 import { Platform, PermissionsAndroid, Alert } from "react-native";
-import { BleError, BleManager, Device, Characteristic, ScanMode } from "react-native-ble-plx";
+import { BleError, BleManager, Device, Characteristic, ScanMode, ConnectionOptions } from "react-native-ble-plx";
 import { useState, useMemo, useEffect } from "react";
 import { useBetween } from "use-between";
+import { useNavigation } from "@react-navigation/native";
+import { navigate } from "../navigation/RootNavigation";
 
 import { atob, btoa } from "react-native-quick-base64";
 
@@ -14,6 +16,10 @@ const UART_GATT_SMP_CHARACTERISTIC_UUID = "DA2E7828-FBCE-4E01-AE9E-261174997C48"
 const scanningOptions = {
     scanMode: ScanMode.LowLatency,
   };
+const connectOptions : ConnectionOptions = {
+    requestMTU: 512,
+    autoConnect: false,
+};
 type PermissionCallback = (result: boolean) => void;
 
 interface BluetoothLowEnergyAPI {
@@ -26,7 +32,6 @@ interface BluetoothLowEnergyAPI {
     onDataReceived(error : Error | null, characteristic: Characteristic|null) : void;
     sendCommand(command: string): void;
     stopAndStartScan(): void;
-    handleDisconnect(): void;
     devices: Device[];
 }
 const bleManager = new BleManager();
@@ -79,16 +84,13 @@ function useBLE(): BluetoothLowEnergyAPI {
     const connectToDevice = async (device: Device) => {
         try{
             setData("");
-            await bleManager.connectToDevice(device.id).then(async (device1: Device) => {
+            await bleManager.connectToDevice(device.id, connectOptions).then(async (device1: Device) => {
                 setConnectedDevice(device1)
                 await device1.discoverAllServicesAndCharacteristics()
-                device1.onDisconnected(() => {
-                    console.log("device disconnected");
-                });
             });
-            // bleManager.stopDeviceScan();
+            bleManager.stopDeviceScan();
         }catch(error) {
-            console.log(JSON.stringify(error));
+            console.log("here ", JSON.stringify(error));
         }
     };
 
@@ -137,16 +139,12 @@ function useBLE(): BluetoothLowEnergyAPI {
         scanForDevices();
     }
 
-    const handleDisconnect = () => {
-        if (currentDevice) {
-            currentDevice.cancelConnection().then(() => {
-                setConnectedDevice(null);
-                stopAndStartScan();
-            });
-        }
-    };
+   
     
-    return { requestPermission, scanForDevices, devices, connectToDevice, startStreamingData, currentDevice, ChesterData, onDataReceived, sendCommand, stopAndStartScan, handleDisconnect};
+
+    
+    
+    return { requestPermission, scanForDevices, devices, connectToDevice, startStreamingData, currentDevice, ChesterData, onDataReceived, sendCommand, stopAndStartScan};
 }
 const useBleContext = () => useBetween(useBLE);
 export default useBleContext;

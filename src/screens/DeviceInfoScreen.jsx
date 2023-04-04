@@ -54,10 +54,6 @@ const DeviceInfoScreen = ({route, navigation}) => {
     })
     }, [])
 
-    const goToDevice = (consId) => {
-        trigger("impactLight", {ignoreAndroidSystemSettings: false, enableVibrateFallback: true})
-        navigation.navigate("Device", {consid: id})
-    }
     return(
         <ScrollView scrollEnabled={true} style={styles.scrollView}>
             {devices && devices.map((device) => {
@@ -74,6 +70,9 @@ const DeviceInfoScreen = ({route, navigation}) => {
 
                         <Text style={styles.title}>Status:</Text>
                         <Text style={[styles.value, {color: device.devStatus == "Active" ? "green" : "red"}]}>{device.devStatus ? device.devStatus : "Unknown"}</Text>
+
+                        <Text style={styles.title}>Password:</Text>
+                        <Text style={styles.value}>{device.devPass ? device.devPass : "Unknown"}</Text>
                     </View>
                 )
             })}

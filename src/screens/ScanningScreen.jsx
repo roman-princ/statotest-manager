@@ -6,6 +6,7 @@ import mid from "../../assets/images/mid.png"
 import low from "../../assets/images/low.png"
 import styles from '../../assets/style/styles.jsx';
 import Indicator from '../components/Indicator';
+import { navigate } from '../navigation/RootNavigation';
 
 const ScanningScreen = ({navigation}) => {
     const {currentDevice, scanForDevices, requestPermission, devices, connectToDevice, startStreamingData, stopAndStartScan} = useBleContext();

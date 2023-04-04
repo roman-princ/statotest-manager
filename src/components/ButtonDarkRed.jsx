@@ -1,10 +1,11 @@
 import {Pressable, Text, StyleSheet, View} from 'react-native';
 import useBleContext from '../ble/useBLE';
+import { trigger } from 'react-native-haptic-feedback';
 const ButtonDarkRed = ({text, args, disabled}) => {
     const {sendCommand} = useBleContext();
     return(
         <View>
-            <Pressable style={styles.button} onPress={() => sendCommand(args)} disabled={disabled}>
+            <Pressable style={styles.button} onPress={() => {trigger("impactLight" ); sendCommand(args)}} disabled={!!disabled}>
                 <Text style={styles.buttonTitle}>{text}</Text>
             </Pressable>
         </View>
@@ -19,8 +20,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#8B0000',
         borderRadius: 8,
         height: 50,
-        width: 100,
+        flexGrow: 1,
         justifyContent: 'center',
+        width: 100
       },
       buttonTitle: {
         color: '#FFFFFF',

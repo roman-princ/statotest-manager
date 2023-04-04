@@ -65,14 +65,16 @@ const styles = StyleSheet.create({
     },
     text:{
         fontFamily: "Poppins-Medium",
-        fontSize: 15
+        fontSize: 15,
+        color: "#fff",
     },
     buttons: {
         marginTop: 10,
         flexDirection: "row",
-        justifyContent: "space-around",
+        justifyContent: "space-between",
         alignItems: "center",
-        width: "95%",
+        width: "91%",
+        alignContent: "stretch",
     },
     scrollView: {
         borderRadius: 10,
@@ -95,7 +97,6 @@ const styles = StyleSheet.create({
     buttonTitle: {
         color: '#FFFFFF',
         fontSize: 15,
-        fontWeight: '600',
         lineHeight: 22,
         fontFamily: "Poppins-Medium"
     },
