@@ -60,7 +60,8 @@ const styles = StyleSheet.create({
     },
     text:{
         fontFamily: "Poppins-Medium",
-        fontSize: 15
+        fontSize: 15,
+        color: "#fff",
     },
     scrollView: {
         borderRadius: 10,

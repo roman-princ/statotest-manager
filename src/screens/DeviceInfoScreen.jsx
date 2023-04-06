@@ -6,6 +6,7 @@ import { trigger } from 'react-native-haptic-feedback';
 import { Button } from 'react-native-paper';
 import Indicator from '../components/Indicator';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import SizedBox from '../components/SizedBox';
 
 const DeviceInfoScreen = ({route, navigation}) => {
     const [isActive, setIsActive] = useState(true);
@@ -71,12 +72,11 @@ const DeviceInfoScreen = ({route, navigation}) => {
                         <Text style={styles.title}>Status:</Text>
                         <Text style={[styles.value, {color: device.devStatus == "Active" ? "green" : "red"}]}>{device.devStatus ? device.devStatus : "Unknown"}</Text>
 
-                        <Text style={styles.title}>Password:</Text>
+                        <Text style={styles.title}>Bluetooth password:</Text>
                         <Text style={styles.value}>{device.devPass ? device.devPass : "Unknown"}</Text>
                     </View>
                 )
             })}
-        {/* {console.log(devices)} */}
         </ScrollView>
         
     )

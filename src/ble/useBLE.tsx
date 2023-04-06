@@ -1,17 +1,13 @@
 import { Platform, PermissionsAndroid, Alert } from "react-native";
 import { BleError, BleManager, Device, Characteristic, ScanMode, ConnectionOptions } from "react-native-ble-plx";
-import { useState, useMemo, useEffect } from "react";
+import { useState } from "react";
 import { useBetween } from "use-between";
-import { useNavigation } from "@react-navigation/native";
-import { navigate } from "../navigation/RootNavigation";
 
 import { atob, btoa } from "react-native-quick-base64";
 
 const CHESTER_SERVICE_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
 const CHESTER_RECIEVE_CHARACTERISTIC_UUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
 const CHESTER_SEND_CHARACTERISTIC_UUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
-const UART_GATT_SMP_SERVICE_UUID = "8D53DC1D-1DB7-4CD3-868B-8A527460AA84";
-const UART_GATT_SMP_CHARACTERISTIC_UUID = "DA2E7828-FBCE-4E01-AE9E-261174997C48";
 
 const scanningOptions = {
     scanMode: ScanMode.LowLatency,
@@ -90,7 +86,7 @@ function useBLE(): BluetoothLowEnergyAPI {
             });
             bleManager.stopDeviceScan();
         }catch(error) {
-            console.log("here ", JSON.stringify(error));
+            Alert.alert("Device disconnected")
         }
     };
 
@@ -112,6 +108,7 @@ function useBLE(): BluetoothLowEnergyAPI {
     ) => {
         if (error) {
             console.log(JSON.stringify(error));
+            Alert.alert(error.message);
             return;
         }else if (!characteristic?.value) {
             Alert.alert("No characteristic found (Are you sure you're connected to the right device?)");

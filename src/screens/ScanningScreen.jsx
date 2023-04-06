@@ -89,7 +89,8 @@ const style = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "baseline",
         borderRadius: 10,
-        fontFamily: "Poppins-Medium"
+        shadowColor: "#fff",
+        
     },
     devName: {
         fontFamily: "Poppins-SemiBold",
