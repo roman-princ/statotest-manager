@@ -6,12 +6,14 @@ import { trigger } from 'react-native-haptic-feedback';
 import { Button } from 'react-native-paper';
 import Indicator from '../components/Indicator';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import useBleContext from '../ble/useBLE';
 
 const MPScreen = ({route, navigation}) => {
     const [isActive, setIsActive] = useState(true);
+    const {API_URL} = useBleContext();
     const [MPs, setMPs] = useState(null);
     const FetchCompanies = async (token) => {
-            await axios.post("https://statotestapi.azurewebsites.net/MP/get",{
+            await axios.post(API_URL + "MP/get",{
                 compId: route.params?.compId,
                 consId: route.params?.consId
             }, 
@@ -36,16 +38,16 @@ const MPScreen = ({route, navigation}) => {
     })
     }, [])
 
-    const goToDevice = (mpId) => {
+    const goToDevice = (MP) => {
         trigger("impactLight", {ignoreAndroidSystemSettings: false, enableVibrateFallback: true})
-        navigation.navigate("DeviceInfo", {consId: route.params.conId, compId: route.params.compId, mpId: mpId})
+        navigation.navigate("DeviceInfo", {consId: route.params.conId, compId: route.params.compId, MP: MP})
     }
     return(
         <ScrollView scrollEnabled={true} style={styles.scrollView}>
             <View style={styles.container}>
             {MPs !== null ? MPs.map((MP) => {
                 return(
-                    <Pressable key={MP.mpId} style={styles.button} onPress={() => goToDevice(MP.mpId)}>
+                    <Pressable key={MP.mpId} style={styles.button} onPress={() => goToDevice(MP)}>
                         <Text style={styles.text}>{MP.mpName}</Text>
                         <Icon name="navigate-next" size={30} color="#fff" />
                     </Pressable>

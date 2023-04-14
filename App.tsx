@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import {trigger} from "react-native-haptic-feedback"
 import useBleContext from './src/ble/useBLE';
-import { navigate, navigationRef } from './src/navigation/RootNavigation';
+import Toast from 'react-native-toast-message';
 
 
 const Tab = createBottomTabNavigator();
@@ -25,7 +25,7 @@ const App = () => {
   }, []);
 
   return (
-    //nějak se to cyklí, když se připojím k BLE, tak se provede trigger několikrát
+    <>
     <NavigationContainer /*ref={navigationRef}*/ theme={DarkTheme} onStateChange={() => trigger("impactLight", { enableVibrateFallback: true, ignoreAndroidSystemSettings: false } )}>
         <Tab.Navigator screenOptions={{
             headerShown: false,
@@ -45,11 +45,11 @@ const App = () => {
           tabBarIcon: () => (
             <Icon name={"apartment"} color={"#8b0000"} size={26} />
           ),
-          title: "Dashboard"
+          title: "Home"
           
         }}
         />
-        <Tab.Screen name="Connect to CHESTER" component={BleScreen}
+        <Tab.Screen name="Search Device" component={BleScreen}
         options={{
           tabBarIcon: ({focused }) => (
             <Icon name={focused ? "bluetooth-connected" : "bluetooth"} color={"#8b0000"} size={26} />
@@ -58,7 +58,8 @@ const App = () => {
          />
       </Tab.Navigator>
     </NavigationContainer>
-      
+    <Toast />
+    </>
     );
 }
 

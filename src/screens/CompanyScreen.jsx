@@ -6,13 +6,15 @@ import { trigger } from 'react-native-haptic-feedback';
 import { Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Indicator from '../components/Indicator';
+import useBleContext from '../ble/useBLE';
 
 
 const CompanyScreen = ({navigation}) => {
+    const {API_URL} = useBleContext();
     const [isActive, setIsActive] = useState(true);
     const [companies, setCompanies] = useState(null);
     const FetchCompanies = async (token) => {
-            await axios.post("https://statotestapi.azurewebsites.net/Company/Get",{}, 
+            await axios.post(API_URL + "Company/Get",{}, 
             {
                 headers:{
                     'Authorization': String(token).replace(/['"]+/g, ''),

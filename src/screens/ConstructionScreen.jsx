@@ -6,13 +6,15 @@ import { trigger } from 'react-native-haptic-feedback';
 import { Button } from 'react-native-paper';
 import Indicator from '../components/Indicator';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import useBleContext from '../ble/useBLE';
 
 const ConstructionScreen = ({route, navigation}) => {
     //console.log("params", route.params)
+    const {API_URL} = useBleContext();
     const [isActive, setIsActive] = useState(true);
     const [constructions, setConstructions] = useState(null);
     const FetchCompanies = async (token) => {
-            await axios.post("https://statotestapi.azurewebsites.net/Constructions/get",{
+            await axios.post(API_URL + "Constructions/get",{
                 compId: route.params?.id
             }, 
             {

@@ -18,6 +18,7 @@ import {
   import SizedBox from "../components/SizedBox";
   import Indicator from "../components/Indicator";
   import { trigger } from "react-native-haptic-feedback";
+  import Toast from "react-native-toast-message";
   
   export default function LoginScreen({navigation}) {
     const [email, setEmail] = useState("");
@@ -44,11 +45,24 @@ import {
             );
           }
           catch(e){
-            Alert.alert(e.message);
+            Toast.show({
+              type: "error",
+              text1: "Error",
+              text2: "Something went wrong",
+              visibilityTime: 2000,
+              autoHide: true,
+              
+            });
           }
         })
         .catch((error) => {
-          Alert.alert(error.message);
+          Toast.show({
+            type: "error",
+            text1: "Error",
+            text2: error.message,
+            visibilityTime: 2000,
+            autoHide: true,
+          });
         });
         setIsActive(false);
     });
@@ -57,6 +71,7 @@ import {
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.content}
+        onPress={() => Keyboard.dismiss}
       >
         <View style={styles.logoView}>
           <Image source={require("../../assets/images/logo.png")} style={styles.logo} />
@@ -83,6 +98,7 @@ import {
                 returnKeyType="next"
                 style={styles.textInput}
                 textContentType="username"
+                on
               />
             </View>
           </Pressable>

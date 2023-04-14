@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useBetween } from "use-between";
 
 import { atob, btoa } from "react-native-quick-base64";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 const CHESTER_SERVICE_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
 const CHESTER_RECIEVE_CHARACTERISTIC_UUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
@@ -29,6 +30,7 @@ interface BluetoothLowEnergyAPI {
     sendCommand(command: string): void;
     stopAndStartScan(): void;
     devices: Device[];
+    API_URL: string;
 }
 const bleManager = new BleManager();
 
@@ -62,7 +64,13 @@ function useBLE(): BluetoothLowEnergyAPI {
             if(error) {
                 console.log(JSON.stringify(error.errorCode));
                 if(error.errorCode === 600) {
-                    Alert.alert("Restart Bluetooth.");
+                    Toast.show({
+                        type: "error",
+                        text1: "Bluetooth is disabled",
+                        text2: "Please enable bluetooth to scan for CHESTER sensors",
+                        visibilityTime: 4000,
+                        autoHide: true,
+                    });
                 }
                 return;
             }
@@ -86,7 +94,13 @@ function useBLE(): BluetoothLowEnergyAPI {
             });
             bleManager.stopDeviceScan();
         }catch(error) {
-            Alert.alert("Device disconnected")
+            Toast.show({
+                type: "error",
+                text1: "Error connecting to device",
+                text2: "Please try again",
+                visibilityTime: 3000,
+                autoHide: true,
+            });
         }
     };
 
@@ -108,10 +122,20 @@ function useBLE(): BluetoothLowEnergyAPI {
     ) => {
         if (error) {
             console.log(JSON.stringify(error));
-            Alert.alert(error.message);
+            Toast.show({
+                type: "error",
+                text1: error.message,
+                visibilityTime: 3000,
+                autoHide: true,
+            });
             return;
         }else if (!characteristic?.value) {
-            Alert.alert("No characteristic found (Are you sure you're connected to the right device?)");
+            Toast.show({
+                type: "error",
+                text1: "No data received",
+                visibilityTime: 3000,
+                autoHide: true,
+            });
             return;
         }
         
@@ -141,7 +165,7 @@ function useBLE(): BluetoothLowEnergyAPI {
 
     
     
-    return { requestPermission, scanForDevices, devices, connectToDevice, startStreamingData, currentDevice, ChesterData, onDataReceived, sendCommand, stopAndStartScan};
+    return { requestPermission, scanForDevices, devices, connectToDevice, startStreamingData, currentDevice, ChesterData, onDataReceived, sendCommand, stopAndStartScan, API_URL: "https://statotestapiv3.azurewebsites.net/"};
 }
 const useBleContext = () => useBetween(useBLE);
 export default useBleContext;

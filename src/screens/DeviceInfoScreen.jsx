@@ -1,21 +1,23 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
 import { useCallback, useEffect, useState } from 'react';
-import { View, Pressable, Text, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Pressable, Text, StyleSheet, Alert, ScrollView, TextInput } from 'react-native';
 import { trigger } from 'react-native-haptic-feedback';
-import { Button } from 'react-native-paper';
-import Indicator from '../components/Indicator';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import SizedBox from '../components/SizedBox';
+import useBleContext from '../ble/useBLE';
+import dayjs from 'dayjs';
+import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
 const DeviceInfoScreen = ({route, navigation}) => {
+    const {API_URL} = useBleContext();
     const [isActive, setIsActive] = useState(true);
-    const [devices, setDevices] = useState(null);
+    const [device, setDevice] = useState(null);
+    const [desc, setDesc] = useState("");
+    const [MP, setMP] = useState(route.params?.MP);
     const FetchCompanies = async (token) => {
-            await axios.post("https://statotestapi.azurewebsites.net/MP/dev/get",{
+            await axios.post(API_URL + "MP/dev/get",{
                 compId: route.params?.compId,
                 consId: route.params?.consId,
-                mpId: route.params?.mpId
+                mpId: route.params?.MP.mpId
             }, 
             {
                 headers:{
@@ -24,8 +26,7 @@ const DeviceInfoScreen = ({route, navigation}) => {
                 }
             }
             ).then((response) => {
-                axios.post("https://statotestapi.azurewebsites.net/Device/Get",{
-                    compId: route.params?.compId,
+                axios.post(API_URL + "Device/Get",{
                     devId: response.data[0].devId
                 },
                 {
@@ -36,16 +37,26 @@ const DeviceInfoScreen = ({route, navigation}) => {
                 }
                 ).then((response) => {
                     console.log(response.data);
-                    setDevices(response.data);
+                    setDevice(response.data);
                 }).catch((error) => {
                     console.log(JSON.stringify(error));
-                    // Alert.alert("Error", "Something went wrong");
-                    // navigation.goBack();
+                    Toast.show({
+                        type: "error",
+                        text1: "Error",
+                        text2: "Something went wrong",
+                        visibilityTime: 2000,
+                        autoHide: true,
+                    })
                 })
             }).catch((error) => {
                 console.log(JSON.stringify(error));
-                // Alert.alert("Error", "Something went wrong");
-                // navigation.goBack();
+                Toast.show({
+                    type: "error",
+                    text1: "Error",
+                    text2: "Something went wrong",
+                    visibilityTime: 2000,
+                    autoHide: true,
+                })
             })
             trigger("notificationSuccess", {ignoreAndroidSystemSettings: false, enableVibrateFallback: true})
         }
@@ -55,31 +66,136 @@ const DeviceInfoScreen = ({route, navigation}) => {
     })
     }, [])
 
+    const saveMP = async (description) => {
+        await AsyncStorage.getItem("@token").then((token) => {
+            axios.post(API_URL + "MP/Upd",{
+                compId: route.params?.compId,
+                mpId: MP.mpId,
+                mpDesc: description
+            },
+            {
+                headers:{
+                    'Authorization': String(token).replace(/['"]+/g, ''),
+                    'Content-Type' : 'application/json'
+                }
+            }
+            ).then((response) => {
+                console.log(response.data);
+
+            }).catch((error) => {
+                console.log(JSON.stringify(error));
+                trigger("notificationError", {ignoreAndroidSystemSettings: false, enableVibrateFallback: true})
+            })
+        })
+    }
+
     return(
         <ScrollView scrollEnabled={true} style={styles.scrollView}>
-            {devices && devices.map((device) => {
-                return(
+            {device && 
+            <>
+                    <Text style={styles.bigTitle}>Device info</Text>
                     <View style={styles.container} key={device.devId}>
-                        <Text style={styles.title}>Device Name:</Text>
-                        <Text style={styles.value}>{device.devName ? device.devName : "Unknown"}</Text>
+                        
+                        <View style={styles.row}>
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Device Name:</Text>
+                                <Text style={styles.value}>{device.devName ? device.devName : "Unknown"}</Text>
+                            </View>
+                            
+                        
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Device Type:</Text>
+                                <Text style={styles.value}>{device.devType ? device.devType : "Unknown"}</Text>
+                            </View>
+                        </View>
 
-                        <Text style={styles.title}>Device Type:</Text>
-                        <Text style={styles.value}>{device.devType ? device.devType : "Unknown"}</Text>
+                        <View style={styles.row}>
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Serial Number:</Text>
+                                <Text style={styles.value}>{device.devSn ? device.devSn : "Unknown"}</Text>
+                            </View>
 
-                        <Text style={styles.title}>Serial Number:</Text>
-                        <Text style={styles.value}>{device.devSn ? device.devSn : "Unknown"}</Text>
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Description</Text>
+                                <Text style={[styles.value, {width: "85%"}]}>{device.devDesc ? device.devDesc : "Unknown"}</Text>
+                            </View>
+                        </View>
 
-                        <Text style={styles.title}>Status:</Text>
-                        <Text style={[styles.value, {color: device.devStatus == "Active" ? "green" : "red"}]}>{device.devStatus ? device.devStatus : "Unknown"}</Text>
+                        <View style={styles.row}>
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Status:</Text>
+                                <Text style={[styles.value, {color: device.devStatus == "Active" ? "green" : "red"}]}>{device.devStatus ? device.devStatus : "Unknown"}</Text>
+                            </View>
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Battery:</Text>
+                                <Text style={[styles.value, {color: device.devBattery <= 51 ? "orange" : "green"}]}>{device.devBattery ? device.devBattery + "%" : "Unknown"}</Text>
+                            </View>
+                        </View>
 
-                        <Text style={styles.title}>Bluetooth password:</Text>
-                        <Text style={styles.value}>{device.devPass ? device.devPass : "Unknown"}</Text>
+                        <View style={styles.row}>
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Firmware:</Text>
+                                <Text style={styles.value}>{device.firmware ? device.firmware : "Unknown"}</Text>
+                            </View>
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Temperature:</Text>
+                                <Text style={styles.value}>{device.devTemperature ? device.devTemperature + " °C" : "Unknown"}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.row}>
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Last updated:</Text>
+                                <Text style={styles.value}>{device.dateTimeLastComm ? dayjs(device.dateTimeLastComm).format("d. MMMM, HH:MM:ss") : "Unknown"}</Text>
+                            </View>
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Humidity:</Text>
+                                <Text style={styles.value}>{device.devHumidity ? device.devHumidity : "Unknown"}</Text>
+                            </View>
+                        </View>
                     </View>
-                )
-            })}
-        </ScrollView>
-        
-    )
+
+
+                    <Text style={styles.bigTitle}>Measurement point info</Text>
+                    <View style={styles.container}>
+                        <View style={styles.row}>
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Name:</Text>
+                                <Text style={styles.value}>{MP.mpName ? MP.mpName : "Unknown"}</Text>
+                            </View>
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Description:</Text>
+                                <Text style={[styles.value, {width: "85%"}]}>{MP.mpDesc ? MP.mpDesc : "Unknown"}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.row}>
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Added:</Text>
+                                <Text style={styles.value}>{MP.dateTimeAdd ? dayjs(MP.dateTimeAdd).format("d. MMMM, HH:MM:ss") : "Unknown"}</Text>
+                            </View>
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Updated:</Text>
+                                <Text style={styles.value}>{MP.dateTimeUpdate ? dayjs(MP.dateTimeUpdate).format("d. MMMM, HH:MM:ss") : "Unknown"}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.row}>
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Latitude:</Text>
+                                <Text style={styles.value}>{MP.mpLat ? MP.mpLat : "Unknown"}</Text>
+                            </View>
+                            <View style={styles.col}>
+                                <Text style={styles.title}>Longitude:</Text>
+                                <Text style={styles.value}>{MP.mpLon ? MP.mpLon : "Unknown"}</Text>
+                            </View>
+                        </View>
+                    </View>
+                    </>
+        }
+
+    </ScrollView>     
+)
     
 }
 
@@ -88,17 +204,43 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: '#252526',
         height: '100%',
-        margin: 20
+        width: "100%",
+        flexWrap: "wrap",
+        marginTop: 20,
+        marginLeft: 20,
+        flex: 1,
+    },
+    row: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        width: "100%",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    col:{
+        width: "48%",
+        marginBottom: 20,
+        flexDirection: "column",
+        flexWrap: "wrap",   
     },
     title: {
         color: '#fff',
-        fontSize: 15,
+        fontSize: 10,
         width: '100%',
         fontFamily: "Poppins-Medium"
     },
+    bigTitle: {
+        color: '#fff',
+        fontSize: 25,
+        width: '100%',
+        fontFamily: "Poppins-SemiBold",
+        marginTop: 20,
+        textAlign: "center",
+    },
+
     value:{
         color: '#fff',
-        fontSize: 20,
+        fontSize: 15,
         fontFamily: "Poppins-SemiBold",
         width: '100%',
         marginBottom: 20
@@ -106,6 +248,7 @@ const styles = StyleSheet.create({
     scrollView: {
         backgroundColor: '#252526',
         height: '100%',
+        width: '100%',
     }
 });
 export default DeviceInfoScreen;
