@@ -62,8 +62,11 @@ const DeviceInfoScreen = ({route, navigation}) => {
         }
     useEffect(() => {
         AsyncStorage.getItem("@token").then((token) => {
-            FetchCompanies(token)
-    })
+            FetchCompanies(token).then(() => {
+                navigation.setOptions({title: device.devSn ? "CHESTER " + device.devSn : "Device info"})
+            })
+        })
+        
     }, [])
 
     const saveMP = async (description) => {
@@ -124,7 +127,7 @@ const DeviceInfoScreen = ({route, navigation}) => {
                         <View style={styles.row}>
                             <View style={styles.col}>
                                 <Text style={styles.title}>Status:</Text>
-                                <Text style={[styles.value, {color: device.devStatus == "Active" ? "green" : "red"}]}>{device.devStatus ? device.devStatus : "Unknown"}</Text>
+                                <Text style={[styles.value, {color: device.devStatus == "Active" || device.devStatus == "Registered" ? "green" : "red"}]}>{device.devStatus ? device.devStatus : "Unknown"}</Text>
                             </View>
                             <View style={styles.col}>
                                 <Text style={styles.title}>Battery:</Text>
@@ -204,10 +207,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: '#252526',
         height: '100%',
-        width: "100%",
+        width: "95%",
         flexWrap: "wrap",
         marginTop: 20,
-        marginLeft: 20,
+        marginLeft: 10,
+        marginRight: 10,
         flex: 1,
     },
     row: {
@@ -221,11 +225,14 @@ const styles = StyleSheet.create({
         width: "48%",
         marginBottom: 20,
         flexDirection: "column",
-        flexWrap: "wrap",   
+        flexWrap: "wrap",  
+        backgroundColor: "rgba(255,255,255,0.1)",
+        padding: 10,
+        borderRadius: 10,
     },
     title: {
         color: '#fff',
-        fontSize: 10,
+        fontSize: 11,
         width: '100%',
         fontFamily: "Poppins-Medium"
     },
@@ -240,7 +247,7 @@ const styles = StyleSheet.create({
 
     value:{
         color: '#fff',
-        fontSize: 15,
+        fontSize: 16,
         fontFamily: "Poppins-SemiBold",
         width: '100%',
         marginBottom: 20
