@@ -44,7 +44,7 @@ function useBLE(): BluetoothLowEnergyAPI {
                 PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
                 {
                     title: "Bluetooth Permission",
-                    message: "This app needs access to your bluetooth to scan for CHESTER senosrs",
+                    message: "This app needs access to bluetooth to scan for CHESTER senosrs",
                     buttonNeutral: "Ask Me Later",
                     buttonNegative: "Cancel",
                     buttonPositive: "OK"

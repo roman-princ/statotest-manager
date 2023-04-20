@@ -149,7 +149,7 @@ const DeviceInfoScreen = ({route, navigation}) => {
                         <View style={styles.row}>
                             <View style={styles.col}>
                                 <Text style={styles.title}>Last updated:</Text>
-                                <Text style={styles.value}>{device.dateTimeLastComm ? dayjs(device.dateTimeLastComm).format("d. MMMM, HH:MM:ss") : "Unknown"}</Text>
+                                <Text style={styles.value}>{device.dateTimeLastComm ? dayjs(device.dateTimeLastComm).format("d. MMMM YYYY, HH:MM:ss") : "Unknown"}</Text>
                             </View>
                             <View style={styles.col}>
                                 <Text style={styles.title}>Humidity:</Text>
@@ -175,7 +175,7 @@ const DeviceInfoScreen = ({route, navigation}) => {
                         <View style={styles.row}>
                             <View style={styles.col}>
                                 <Text style={styles.title}>Added:</Text>
-                                <Text style={styles.value}>{MP.dateTimeAdd ? dayjs(MP.dateTimeAdd).format("d. MMMM, HH:MM:ss") : "Unknown"}</Text>
+                                <Text style={styles.value}>{MP.dateTimeAdd ? dayjs(MP.dateTimeAdd).format("d. MMMM YYYY, HH:MM:ss") : "Unknown"}</Text>
                             </View>
                             <View style={styles.col}>
                                 <Text style={styles.title}>Updated:</Text>
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     },
     col:{
         width: "48%",
-        marginBottom: 20,
+        marginBottom: 15,
         flexDirection: "column",
         flexWrap: "wrap",  
         backgroundColor: "rgba(255,255,255,0.1)",

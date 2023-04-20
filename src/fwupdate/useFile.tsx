@@ -6,19 +6,35 @@ import DocumentPicker, {
     types,
   } from 'react-native-document-picker'
 import { Alert, NativeModules } from "react-native";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
     const useFile = () => {
     const [file, setFile] = React.useState<DocumentPickerResponse | DirectoryPickerResponse | null>();
 
     const handleError = (err: unknown) => {
         if(DocumentPicker.isCancel(err)) {
-            Alert.alert('No file selected');
+            Toast.show({
+                type: 'error',
+                text1: 'File selection cancelled',
+                visibilityTime: 3000,
+                autoHide: true,
+            });
         }
         else if(isInProgress(err)) {
-            Alert.alert('File selection already in progress');
+            Toast.show({
+                type: 'error',
+                text1: 'File selection already in progress',
+                visibilityTime: 3000,
+                autoHide: true,
+            });
         }
         else {
-            Alert.alert('Unknown error');
+            Toast.show({
+                type: 'error',
+                text1: 'Unknown error',
+                visibilityTime: 3000,
+                autoHide: true,
+            });
         }
     }
 
