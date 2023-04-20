@@ -63,27 +63,35 @@ const useFwUpdate = (
         upgradeRef.current.cancel();
       };
 
-      const eraseImage = async (): Promise<void> => {
-        if (!upgradeRef.current) return;
-        eraseImage().then(() => {
-          sendCommand("mcuboot");
-          Toast.show({
-            type: 'success',
-            text1: 'Image erased',
-            visibilityTime: 3000,
-            autoHide: true,
-          });
-        }).catch((error) => {
-          Toast.show({
-            type: 'error',
-            text1: 'Error erasing image',
-            text2: error.message,
-            visibilityTime: 3000,
-            autoHide: true,
-          });
-        })
+      const deleteImage = async (): Promise<void> => {
+        if (!upgradeRef.current){
+          console.log("here")
+          return;
+        };
+        if(bleId !== null)
+        {
+          eraseImage(bleId).then(() => {
+            sendCommand("mcuboot");
+            Toast.show({
+              type: 'success',
+              text1: 'Image erased',
+              visibilityTime: 3000,
+              autoHide: true,
+            });
+          }).catch((error) => {
+            Toast.show({
+              type: 'error',
+              text1: 'Error erasing image',
+              text2: error.message,
+              visibilityTime: 3000,
+              autoHide: true,
+            });
+          })
+        }
+        else Toast.show({type: "error", text1: "No device connected", visibilityTime: 3000, autoHide: true});
+        
       }
     
-      return { progress, runUpdate, state, cancelUpdate, eraseImage };
+      return { progress, runUpdate, state, cancelUpdate, deleteImage };
 }
 export default useFwUpdate;

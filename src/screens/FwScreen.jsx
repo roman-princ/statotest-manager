@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, Pressable, ScrollView} from "react-native"
+import {View, Text, StyleSheet, Pressable, ScrollView, SafeAreaView} from "react-native"
 import useBleContext from "../ble/useBLE";
 import {useEffect} from "react";
 import useFile from "../fwupdate/useFile";
@@ -11,7 +11,7 @@ import { Bar } from "react-native-progress";
 const FwScreen = ({navigation}) => {
     const {pickFile, file} = useFile()
     const {currentDevice, sendCommand, ChesterData} = useBleContext();
-    const {cancelUpdate, runUpdate, progress, state} = useFwUpdate(
+    const {cancelUpdate, runUpdate, progress, state, deleteImage } = useFwUpdate(
         currentDevice.id,
         file?.uri || null,
         UpgradeMode.TEST_AND_CONFIRM
@@ -26,7 +26,7 @@ const FwScreen = ({navigation}) => {
         }
     }, []);
     return(
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <ScrollView style={styles.scrollView}>
                 <Text style={styles.text}>{ChesterData}</Text>
                 <SizedBox height={30} />
@@ -37,18 +37,27 @@ const FwScreen = ({navigation}) => {
                     <Text style={styles.buttonTitle}>{file ? file.name : "Pick a file"}</Text>
                 </View>
             </Pressable>
-            <Pressable onPress={() => runUpdate()} style={{width: "91%", marginBottom: 10}} disabled={file ? false : true }>
-                <View style={styles.uploadButton}>
-                    <Icon name="cloud-upload" size={30} color="#FFFFFF" style={{marginRight: 5}}/>
-                    <Text style={styles.buttonTitle}>Upload</Text>
-                </View>
-            </Pressable>
+            <SafeAreaView style={styles.buttonsView}>
+                <Pressable onPress={() => runUpdate()} style={{width: "45%", marginRight: 10}} disabled={file ? false : true }>
+                    <View style={styles.uploadButton}>
+                        <Icon name="cloud-upload" size={30} color="#FFFFFF" style={{marginRight: 5}}/>
+                        <Text style={styles.buttonTitle}>Upload</Text>
+                    </View>
+                </Pressable>
+                <Pressable onPress={() => deleteImage()} style={{width: "50%"}} disabled={file ? false : true }>
+                    <View style={styles.uploadButton}>
+                        <Icon name="delete-outline" size={30} color="#FFFFFF" style={{marginRight: 5}}/>
+                        <Text style={styles.buttonTitle}>Erase Image</Text>
+                    </View>
+                </Pressable>
+            </SafeAreaView>
+            
             <View style={{flexDirection: "row", justifyContent: "center", flex: 1, alignItems: "center", height: 30, opacity: state === "UPLOAD" || state ==="RESET"? 100 : 0}}>
                 <Bar progress={progress / 100} width={200} height={10} color="#8B0000" />
                 <Text style={[styles.text, {marginLeft: 10}]}>{progress}%</Text>
             </View>
             <Text style={[styles.text, {opacity: state === "UPLOAD" || state ==="RESET"? 100 : 0}]}>State: {state}</Text>
-        </View>
+        </SafeAreaView>
     )
 }
 
@@ -96,6 +105,11 @@ const styles = StyleSheet.create({
         justifyContent: "space-around",
         alignItems: "baseline",
         width: "100%",
+    },
+    buttonsView:{
+        flexDirection: "row",
+        width: "91%",
+        justifyContent: "space-between",
     }
 
 });
