@@ -1,14 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
 import { useCallback, useEffect, useState } from 'react';
-import { View, Pressable, Text, StyleSheet, Alert, ScrollView, TextInput } from 'react-native';
+import { View, Pressable, Text, StyleSheet, Alert, ScrollView, TextInput, Modal } from 'react-native';
 import { trigger } from 'react-native-haptic-feedback';
 import useBleContext from '../ble/useBLE';
 import dayjs from 'dayjs';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const DeviceInfoScreen = ({route, navigation}) => {
-    const {API_URL} = useBleContext();
+    const {API_URL} = useBleContext(); 
+    const [modalVisible, setModalVisible] = useState(false);
     const [isActive, setIsActive] = useState(true);
     const [device, setDevice] = useState(null);
     const [desc, setDesc] = useState("");
@@ -69,12 +71,15 @@ const DeviceInfoScreen = ({route, navigation}) => {
         
     }, [])
 
-    const saveMP = async (description) => {
+
+    const handleClick = async () => {
+        setModalVisible(!modalVisible)
         await AsyncStorage.getItem("@token").then((token) => {
             axios.post(API_URL + "MP/Upd",{
                 compId: route.params?.compId,
                 mpId: MP.mpId,
-                mpDesc: description
+                mpDesc: desc,
+
             },
             {
                 headers:{
@@ -83,13 +88,28 @@ const DeviceInfoScreen = ({route, navigation}) => {
                 }
             }
             ).then((response) => {
-                console.log(response.data);
+                Toast.show({
+                    type: "success",
+                    text1: "Description updated to " + desc,
+                    text2: "",
+                    visibilityTime: 2000,
+                    autoHide: true,
+                })
+                
 
             }).catch((error) => {
                 console.log(JSON.stringify(error));
                 trigger("notificationError", {ignoreAndroidSystemSettings: false, enableVibrateFallback: true})
+                   Toast.show({
+                        type: "error",
+                        text1: "Error",
+                        text2: "Something went wrong",
+                        visibilityTime: 2000,
+                        autoHide: true,
+                   })
             })
         })
+        
     }
 
     return(
@@ -166,10 +186,14 @@ const DeviceInfoScreen = ({route, navigation}) => {
                                 <Text style={styles.title}>Name:</Text>
                                 <Text style={styles.value}>{MP.mpName ? MP.mpName : "Unknown"}</Text>
                             </View>
-                            <View style={styles.col}>
-                                <Text style={styles.title}>Description:</Text>
+                            <Pressable style={[styles.col, {borderColor: "#808080", borderWidth: 1}]} onPress={() => setModalVisible(true)}>
+                                <View style={{flexDirection: "row"}}>
+                                    <Text style={styles.title}>Description:</Text>
+                                    <Icon name="edit" size={15} color="#808080"/>
+                                </View>
+                                
                                 <Text style={[styles.value, {width: "85%"}]}>{MP.mpDesc ? MP.mpDesc : "Unknown"}</Text>
-                            </View>
+                            </Pressable>
                         </View>
 
                         <View style={styles.row}>
@@ -194,6 +218,36 @@ const DeviceInfoScreen = ({route, navigation}) => {
                             </View>
                         </View>
                     </View>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modalVisible}
+                        onRequestClose={() => {
+                            setModalVisible(!modalVisible);
+                        }}
+                    >
+                         <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                                <TextInput
+                                 onChangeText={(text) => setDesc(text)} 
+                                 style={styles.modalText}
+                                 multiline={true}
+                                 >{MP.mpDesc}</TextInput>
+                                <View style={styles.btnContainer}>
+                                    <Pressable
+                                    style={[styles.button, styles.buttonClose]}
+                                    onPress={() => setModalVisible(!modalVisible)}>
+                                    <Text style={styles.textStyle}>Cancel</Text>
+                                    </Pressable>
+                                    <Pressable
+                                    style={[styles.button, styles.buttonClose]}
+                                    onPress={() => handleClick()}>
+                                    <Text style={styles.textStyle}>Save</Text>
+                                    </Pressable>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
                     </>
         }
 
@@ -203,6 +257,63 @@ const DeviceInfoScreen = ({route, navigation}) => {
 }
 
 const styles = StyleSheet.create({
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 22,
+      },
+      btnContainer:{
+        flexDirection: 'row',
+        width: '100%',
+        justifyContent: 'flex-end',
+      },
+      modalView: {
+        margin: 20,
+        backgroundColor: '#252526',
+        borderRadius: 20,
+        padding: 30,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+        borderWidth: 1,
+        borderColor: 'black',
+      },
+      button: {
+        borderRadius: 20,
+        padding: 10,
+        margin: 5,
+        elevation: 2,
+      },
+      buttonOpen: {
+        backgroundColor: '#F194FF',
+      },
+      buttonClose: {
+        backgroundColor: '#8B0000',
+      },
+      textStyle: {
+        color: 'white',
+        fontFamily: "Poppins-SemiBold",
+        textAlign: 'center',
+      },
+      modalText: {
+        fontSize: 20,
+        color: 'white',
+        borderColor: 'white',
+        borderRadius: 10,
+        borderWidth: 1,
+        padding: 10,
+        fontFamily: "Poppins-Medium",
+        marginBottom: 15,
+        textAlign: 'center',
+        width: 250,
+      },
     container: {
         alignItems: "center",
         backgroundColor: '#252526',
@@ -233,7 +344,7 @@ const styles = StyleSheet.create({
     title: {
         color: '#fff',
         fontSize: 11,
-        width: '100%',
+        width: '90%',
         fontFamily: "Poppins-Medium"
     },
     bigTitle: {

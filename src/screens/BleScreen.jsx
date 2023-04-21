@@ -3,6 +3,7 @@ import ScanningScreen from './ScanningScreen';
 import useBLE from "../ble/useBLE";
 import DeviceScreen from './DeviceScreen';
 import FwScreen from './FwScreen';
+import TerminalScreen from './TerminalScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,17 @@ const BleScreen = () => {
                 },
                 headerTintColor: '#fff',
             }} component={FwScreen} />
+            <Stack.Screen name="Terminal" options={{
+                headerShown: true,
+                headerStyle: {
+                    backgroundColor: '#252526',
+                },
+                headerTitleStyle: {
+                    color: '#fff',
+                    fontFamily: "Poppins-SemiBold",
+                },
+                headerTintColor: '#fff',
+            }} component={TerminalScreen} />
 
         </Stack.Navigator>
     )

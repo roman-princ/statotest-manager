@@ -31,13 +31,13 @@ const FwScreen = ({navigation}) => {
                 <Text style={styles.text}>{ChesterData}</Text>
                 <SizedBox height={30} />
             </ScrollView>
-            <Pressable onPress={() => pickFile()} style={{width: "91%", marginBottom: 10}}>
+            <Pressable onPress={() => pickFile()} style={{width: "91%", marginBottom: 10, display: state === "UPLOAD" ? "none" : "flex"}}>
                 <View style={styles.uploadButton}>
                     <Icon name="file-upload" size={30} color="#FFFFFF" />
                     <Text style={styles.buttonTitle}>{file ? file.name : "Pick a file"}</Text>
                 </View>
             </Pressable>
-            <SafeAreaView style={styles.buttonsView}>
+            <SafeAreaView style={[styles.buttonsView, {display: state === "UPLOAD" ? "none" : "flex"}]}>
                 <Pressable onPress={() => runUpdate()} style={{width: "45%", marginRight: 10}} disabled={file ? false : true }>
                     <View style={styles.uploadButton}>
                         <Icon name="cloud-upload" size={30} color="#FFFFFF" style={{marginRight: 5}}/>
@@ -52,10 +52,19 @@ const FwScreen = ({navigation}) => {
                 </Pressable>
             </SafeAreaView>
             
-            <View style={{flexDirection: "row", justifyContent: "center", flex: 1, alignItems: "center", height: 30, opacity: state === "UPLOAD" || state ==="RESET"? 100 : 0}}>
-                <Bar progress={progress / 100} width={200} height={10} color="#8B0000" />
-                <Text style={[styles.text, {marginLeft: 10}]}>{progress}%</Text>
-            </View>
+            
+            <SafeAreaView style={{flexDirection: "column", justifyContent: "center", flex: 1, alignItems: "center", height: "100%", marginBottom: 10 , opacity: state === "UPLOAD" ? 100 : 0}}>
+                <View style={{flexDirection: "row", marginBottom: 10 }}>
+                    <Bar progress={progress / 100} width={200} color="#8B0000" />
+                    <Text style={[styles.text, {marginLeft: 10}]}>{progress}%</Text>
+                </View>
+                <Pressable onPress={() => cancelUpdate()} style={{width: "30%", height: 5}} disabled={file ? false : true }>
+                    <View style={styles.uploadButton}>
+                        <Icon name="close" size={30} color="#FFFFFF" style={{marginRight: 5}}/>
+                        <Text style={styles.buttonTitle}>Cancel</Text>
+                    </View>
+                </Pressable>    
+            </SafeAreaView>
             <Text style={[styles.text, {opacity: state === "UPLOAD" || state ==="RESET"? 100 : 0}]}>State: {state}</Text>
         </SafeAreaView>
     )
@@ -110,6 +119,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         width: "91%",
         justifyContent: "space-between",
+        alignItems: "baseline",
+        marginBottom: 5,
+        // display: "none",
     }
 
 });
