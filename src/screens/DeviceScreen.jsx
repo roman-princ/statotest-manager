@@ -2,20 +2,19 @@ import { useCallback, useEffect, useState } from 'react';
 import {View, Text, StyleSheet, Alert, Pressable, ScrollView, TextInput, Modal} from 'react-native';
 import useBleContext from '../ble/useBLE';
 import ButtonDarkRed from '../components/ButtonDarkRed';
-import FwScreen from './FwScreen';
 import Indicator from '../components/Indicator';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const DeviceScreen = ({navigation}) => {
     const [modalVisible, setModalVisible] = useState(false);
+    const [modalRTCVisible, setModalRTCVisible] = useState(false);
     const [isActive, setIsActive] = useState(false);
     const [measureValue, setMeasureValue] = useState("");
+    const [currentTime, setCurrentTime] = useState();
     const [sendValue, setSendValue] = useState("");
     const [isDisabled, setIsDisabled] = useState(true);
     const {currentDevice, startStreamingData, sendCommand, ChesterData} = useBleContext();
-    async function sleep(msec) {
-        return new Promise(resolve => setTimeout(resolve, msec));
-    }
     useEffect(() => {
         const asyncFn = async () => {
             if (currentDevice){
@@ -42,28 +41,32 @@ const DeviceScreen = ({navigation}) => {
     const handleConfig = useCallback(async () => {
         setIsActive(true);
         setModalVisible(true);
-        setIsActive(false);
-        
-        // if(measureValue !== "" && sendValue !== ""){
-        //     setModalVisible(true);
-        //     setIsActive(false);
-        //     return;
-        // }
-        // else{
-        //     Toast.show({
-        //         type: "error",
-        //         text1: "Error",
-        //         text2: "Something went wrong",
-        //         visibilityTime: 2000,
-        //         autoHide: true,
-        //     });
-        //     setIsActive(false);
-        //     return;
-        // }
-
-        
-        
+        setIsActive(false);        
     }, [])
+    const handleRtcSave = () => {
+        sendCommand("rtc set " + currentTime);
+        setModalRTCVisible(false);
+        Toast.show({
+            type: "success",
+            text1: "RTC time updated to " + currentTime,
+            visibilityTime: 5000,
+            autoHide: true,
+        });
+        // Alert.alert("Success", "Device is being restarted to apply changes");
+        // navigation.goBack();
+    }
+    const handleShowRTCmodal = () => {
+        const now = new Date();
+        const hours = now.getUTCHours().toString().padStart(2, '0');
+        const minutes = now.getUTCMinutes().toString().padStart(2, '0');
+        const seconds = now.getUTCSeconds().toString().padStart(2, '0');
+        const day = now.getUTCDate().toString().padStart(2, '0');
+        const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
+        const year = now.getUTCFullYear();
+        //rtc set 2023/04/21 14:58:00
+        setCurrentTime(year + "/" + month + "/" + day + " " + hours + ":" + minutes + ":" + seconds);
+        setModalRTCVisible(true);
+    }
 
 
     const handleSave = () => {
@@ -81,6 +84,19 @@ const DeviceScreen = ({navigation}) => {
         Alert.alert("Success", "Device is being restarted to apply changes");
         navigation.goBack();
     }
+    const handleInputChange = (text) => {
+        // Ensure that only numbers are allowed
+        const regex = /^[0-9]*$/;
+        if (regex.test(text)) {
+          // Re-add semicolon, slash, and whitespace characters to new text
+          const formattedText = text.replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1/$2/$3 $4:$5');
+          setCurrentTime(formattedText);
+        } else {
+          // Ignore any other characters
+          const formattedText = currentTime;
+          setCurrentTime(formattedText);
+        }
+      }
 
     
 
@@ -95,6 +111,9 @@ const DeviceScreen = ({navigation}) => {
             </Pressable>
             <Pressable style={styles.button} onPress={() => navigation.navigate("FwScreen")} disabled={isDisabled}>
                 <Text style={styles.buttonTitle}>Firmware</Text>
+            </Pressable>
+            <Pressable style={[styles.button, {marginTop: 25}]} onPress={() => handleShowRTCmodal()} disabled={isDisabled}>
+                <Text style={styles.buttonTitle}>Set RTC</Text>
             </Pressable>
             <Pressable style={[styles.button, {marginTop: 25}]} onPress={() => navigation.navigate("Terminal")} disabled={isDisabled}>
                 <Text style={styles.buttonTitle}>Terminal</Text>
@@ -144,6 +163,36 @@ const DeviceScreen = ({navigation}) => {
                                     onPress={() => handleSave()}>
                                     <Text style={styles.textStyle}>Save</Text>
                                     </Pressable>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
+                    <Modal
+                        animationType="fade"
+                        transparent={true}
+                        visible={modalRTCVisible}
+                        onRequestClose={() => {
+                            setModalVisible(!modalVisible);
+                        }}
+                    >
+                         <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                                <TextInput onChangeText={(text) => handleInputChange(text)} style={[styles.modalText, {width: "100%"}]}>{currentTime}</TextInput>
+                                <View style={styles.btnContainer}>
+                                    <Pressable
+                                    style={[styles.button, styles.buttonClose]}
+                                    onPress={() => setModalRTCVisible(false)}>
+                                    <Text style={styles.textStyle}>Cancel</Text>
+                                    </Pressable>
+                                    <Pressable
+                                    style={[styles.button, styles.buttonClose]}
+                                    onPress={() => handleRtcSave()}>
+                                    <Text style={styles.textStyle}>Save</Text>
+                                    </Pressable>
+                                </View>
+                                <View style={{flexDirection: "row", alignItems:"center", marginTop: 10}}>
+                                    <Icon name="info-outline" size={20} color="#fff"/>
+                                    <Text style={{fontSize: 12, marginLeft:5, color: "white"}}>Format: YYYY/MM/DD HH:MM:SS</Text>
                                 </View>
                             </View>
                         </View>
