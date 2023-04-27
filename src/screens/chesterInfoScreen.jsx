@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
-import { useCallback, useEffect, useState } from 'react';
-import { View, Pressable, Text, StyleSheet, Alert, ScrollView, TextInput, Modal } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, Pressable, Text, StyleSheet, ScrollView, TextInput, Modal } from 'react-native';
 import { trigger } from 'react-native-haptic-feedback';
 import useBleContext from '../ble/useBLE';
 import dayjs from 'dayjs';
@@ -15,7 +15,7 @@ const DeviceInfoScreen = ({route, navigation}) => {
     const [device, setDevice] = useState(null);
     const [desc, setDesc] = useState("");
     const [MP, setMP] = useState(route.params?.MP);
-    const FetchCompanies = async (token) => {
+    const FetchDevices = async (token) => {
             await axios.post(API_URL + "MP/dev/get",{
                 compId: route.params?.compId,
                 consId: route.params?.consId,
@@ -64,7 +64,7 @@ const DeviceInfoScreen = ({route, navigation}) => {
         }
     useEffect(() => {
         AsyncStorage.getItem("@token").then((token) => {
-            FetchCompanies(token).then(() => {
+            FetchDevices(token).then(() => {
                 navigation.setOptions({title: device.devSn ? "CHESTER " + device.devSn : "Device info"})
             })
         })
@@ -219,7 +219,7 @@ const DeviceInfoScreen = ({route, navigation}) => {
                         </View>
                     </View>
                     <Modal
-                        animationType="slide"
+                        animationType="fade"
                         transparent={true}
                         visible={modalVisible}
                         onRequestClose={() => {

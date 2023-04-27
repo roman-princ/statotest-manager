@@ -1,9 +1,8 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import ScanningScreen from './ScanningScreen';
-import useBLE from "../ble/useBLE";
-import DeviceScreen from './DeviceScreen';
-import FwScreen from './FwScreen';
-import TerminalScreen from './TerminalScreen';
+import ScanningScreen from '../screens/scanScreen';
+import DeviceScreen from '../screens/chesterBleScreen';
+import FwScreen from '../screens/fwScreen';
+import TerminalScreen from '../screens/terminalScreen';
 
 const Stack = createNativeStackNavigator();
 

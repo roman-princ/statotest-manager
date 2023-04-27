@@ -1,15 +1,13 @@
 import { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, RefreshControl, Animated, ScrollView} from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image, RefreshControl, ScrollView} from 'react-native';
 import useBleContext from "../ble/useBLE";
 import high from "../../assets/images/high.png"
 import mid from "../../assets/images/mid.png"
 import low from "../../assets/images/low.png"
-import styles from '../../assets/style/styles.jsx';
 import Indicator from '../components/Indicator';
-import { navigate } from '../navigation/RootNavigation';
 
 const ScanningScreen = ({navigation}) => {
-    const {currentDevice, scanForDevices, requestPermission, devices, connectToDevice, startStreamingData, stopAndStartScan} = useBleContext();
+    const {scanForDevices, requestPermission, devices, connectToDevice, stopAndStartScan} = useBleContext();
     const [isActive, setIsActive] = useState(false);
     const [IndicatorIsActive, setIndicatorIsActive] = useState(false);
     const rssiConverter = (rssi) =>{

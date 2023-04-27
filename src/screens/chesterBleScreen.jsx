@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import {View, Text, StyleSheet, Alert, Pressable, ScrollView, TextInput, Modal} from 'react-native';
+import {View, Text, StyleSheet, Alert, Pressable, TextInput, Modal} from 'react-native';
 import useBleContext from '../ble/useBLE';
 import ButtonDarkRed from '../components/ButtonDarkRed';
 import Indicator from '../components/Indicator';
@@ -52,8 +52,6 @@ const DeviceScreen = ({navigation}) => {
             visibilityTime: 5000,
             autoHide: true,
         });
-        // Alert.alert("Success", "Device is being restarted to apply changes");
-        // navigation.goBack();
     }
     const handleShowRTCmodal = () => {
         const now = new Date();
@@ -120,7 +118,7 @@ const DeviceScreen = ({navigation}) => {
             </Pressable>
             </View>
             <Modal
-                        animationType="slide"
+                        animationType="fade"
                         transparent={true}
                         visible={modalVisible}
                         onRequestClose={() => {

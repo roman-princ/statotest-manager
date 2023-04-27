@@ -1,41 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
-import { useCallback, useEffect, useState } from 'react';
-import { View, Pressable, Text, StyleSheet, Alert, ScrollView } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, Pressable, Text, StyleSheet, ScrollView } from 'react-native';
 import { trigger } from 'react-native-haptic-feedback';
-import { Button } from 'react-native-paper';
-import Indicator from '../components/Indicator';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import useBleContext from '../ble/useBLE';
+import apiClientContext from '../api/apiClient';
+import Indicator from '../components/Indicator';
 
 const ConstructionScreen = ({route, navigation}) => {
-    //console.log("params", route.params)
-    const {API_URL} = useBleContext();
-    const [isActive, setIsActive] = useState(true);
-    const [constructions, setConstructions] = useState(null);
-    const FetchCompanies = async (token) => {
-            await axios.post(API_URL + "Constructions/get",{
-                compId: route.params?.id
-            }, 
-            {
-                headers:{
-                    'Authorization': String(token).replace(/['"]+/g, ''),
-                    'Content-Type' : 'application/json'
-                }
-            }
-            ).then((response) => {
-                setConstructions(response.data);
-            }).catch((error) => {
-                console.log(JSON.stringify(error));
-                // Alert.alert("Error", "Something went wrong");
-                // navigation.goBack();
-            })
-            trigger("notificationSuccess", {ignoreAndroidSystemSettings: false, enableVibrateFallback: true})
-        }
+    const {constructions, fetchConstructions, isActive} = apiClientContext();
     useEffect(() => {
-        AsyncStorage.getItem("@token").then((token) => {
-            FetchCompanies(token)
-    })
+            fetchConstructions(route.params?.id);
     }, [])
 
     const goToMP = (consId) => {
@@ -43,19 +19,21 @@ const ConstructionScreen = ({route, navigation}) => {
         navigation.navigate("MP", {consId: consId, compId: route.params?.id})
     }
     return(
-        <ScrollView scrollEnabled={true} style={styles.scrollView}>
-            <View style={styles.container}>
-            {constructions && constructions.map((construction) => {
-                return(
-                    <Pressable key={construction.consId} style={styles.button} onPress={() => goToMP(construction.consId)}>
-                        <Text style={styles.text}>{construction.consName}</Text>
-                        <Icon name="navigate-next" size={30} color="#fff" />
-                    </Pressable>
-                )
-            })}
-        </View>
-        </ScrollView>
-        
+        <>
+            <Indicator active={isActive}/>
+            <ScrollView scrollEnabled={true} style={styles.scrollView}>
+                <View style={styles.container}>
+                {constructions && constructions.map((construction) => {
+                    return(
+                        <Pressable key={construction.consId} style={styles.button} onPress={() => goToMP(construction.consId)}>
+                            <Text style={styles.text}>{construction.consName}</Text>
+                            <Icon name="navigate-next" size={30} color="#fff" />
+                        </Pressable>
+                    )
+                })}
+            </View>
+            </ScrollView>
+        </>
     )
     
 }

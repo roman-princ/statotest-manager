@@ -1,6 +1,5 @@
 import {
     StyleSheet,
-    Alert,
     KeyboardAvoidingView,
     Platform,
     Pressable,
@@ -8,7 +7,6 @@ import {
     Text,
     Image,
     TextInput,
-    TouchableOpacity,
     View,
     Keyboard,
   } from "react-native";
@@ -19,53 +17,17 @@ import {
   import Indicator from "../components/Indicator";
   import { trigger } from "react-native-haptic-feedback";
   import Toast from "react-native-toast-message";
+import apiClientContext from "../api/apiClient";
   
   export default function LoginScreen({navigation}) {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [isActive, setIsActive] = useState(false);
-  
-    const handleLogin = useCallback(async () => {
-      trigger("impactLight", { enableVibrateFallback: true, ignoreAndroidSystemSettings: false })
-      Keyboard.dismiss();
-      setIsActive(true);
-      await axios
-        .post("https://statotestapi.azurewebsites.net/Accounts/authenticate", {
-          email: email,
-          password: password,
-        })
-        .then((response) => {
-          try{
-            let token = JSON.stringify(response.data.jwtToken);
-            AsyncStorage.setItem("@token", token).then(() => {
-              setTimeout(() => {
-              navigation.navigate("Company");
-              }, 1000);
-            }
-            );
-          }
-          catch(e){
-            Toast.show({
-              type: "error",
-              text1: "Error",
-              text2: "Something went wrong",
-              visibilityTime: 2000,
-              autoHide: true,
-              
-            });
-          }
-        })
-        .catch((error) => {
-          Toast.show({
-            type: "error",
-            text1: "Error",
-            text2: error.message,
-            visibilityTime: 2000,
-            autoHide: true,
-          });
-        });
-        setIsActive(false);
-    });
+    const [email, setEmail] = useState("demo@statotest.com");
+    const [password, setPassword] = useState("statodemo");
+    const {handleLogin, isActive} = apiClientContext();
+    const login = () => {
+      handleLogin(email, password).then(() => {
+        navigation.navigate("Company");
+      })
+    }
     return (
       <>
       <KeyboardAvoidingView
@@ -98,6 +60,7 @@ import {
                 returnKeyType="next"
                 style={styles.textInput}
                 textContentType="username"
+                value={email}
                 on
               />
             </View>
@@ -118,13 +81,14 @@ import {
                 secureTextEntry
                 style={styles.textInput}
                 textContentType="password"
+                value={password}
               />
             </View>
           </Pressable>
   
           <SizedBox height={30} />
   
-          <Pressable onPress={() => [setIsActive(true), handleLogin() ]} disabled={isActive}>
+          <Pressable onPress={() => [login() ]} disabled={isActive}>
             <View style={styles.button}>
               <Text style={styles.buttonTitle}>Login</Text>
             </View>

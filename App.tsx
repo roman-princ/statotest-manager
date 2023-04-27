@@ -1,32 +1,18 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
-import BleScreen from "./src/screens/BleScreen"
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NavigationContainer, DarkTheme } from '@react-navigation/native';
+import BleScreen from "./src/screens/scanScreen"
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import DataScreen from './src/screens/DataScreen';
-import { useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import bleStackNav from './src/nav/bleStackNav';
 import {trigger} from "react-native-haptic-feedback"
-import useBleContext from './src/ble/useBLE';
 import Toast from 'react-native-toast-message';
+import apiStackNav from './src/nav/apiStackNav';
 
 
 const Tab = createBottomTabNavigator();
 const App = () => {
-  const [token, setToken] = useState("")
-  const {currentDevice} = useBleContext();
-  useEffect(() => {
-    AsyncStorage.getItem("token").then((value) => {
-      if (value) {
-        setToken(value)
-      }
-    }
-    )
-  }, []);
-
   return (
     <>
-    <NavigationContainer /*ref={navigationRef}*/ theme={DarkTheme} onStateChange={() => trigger("impactLight", { enableVibrateFallback: true, ignoreAndroidSystemSettings: false } )}>
+    <NavigationContainer theme={DarkTheme} onStateChange={() => trigger("impactLight", { enableVibrateFallback: true, ignoreAndroidSystemSettings: false } )}>
         <Tab.Navigator screenOptions={{
             headerShown: false,
             tabBarStyle: {
@@ -40,7 +26,7 @@ const App = () => {
             },
             tabBarHideOnKeyboard: true,
         }}>
-        <Tab.Screen name="Login" component={DataScreen}
+        <Tab.Screen name="Login" component={apiStackNav}
         options={{
           tabBarIcon: () => (
             <Icon name={"apartment"} color={"#8b0000"} size={26} />
@@ -49,7 +35,7 @@ const App = () => {
           
         }}
         />
-        <Tab.Screen name="Search Device" component={BleScreen}
+        <Tab.Screen name="Search Device" component={bleStackNav}
         options={{
           tabBarIcon: ({focused }) => (
             <Icon name={focused ? "bluetooth-connected" : "bluetooth"} color={"#8b0000"} size={26} />

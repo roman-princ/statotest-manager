@@ -1,58 +1,40 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Pressable, Text, StyleSheet, Alert, ScrollView } from 'react-native';
 import { trigger } from 'react-native-haptic-feedback';
-import { Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Indicator from '../components/Indicator';
 import useBleContext from '../ble/useBLE';
+import apiClientContext from '../api/apiClient';
 
 
 const CompanyScreen = ({navigation}) => {
-    const {API_URL} = useBleContext();
-    const [isActive, setIsActive] = useState(true);
-    const [companies, setCompanies] = useState(null);
-    const FetchCompanies = async (token) => {
-            await axios.post(API_URL + "Company/Get",{}, 
-            {
-                headers:{
-                    'Authorization': String(token).replace(/['"]+/g, ''),
-                    'Content-Type' : 'application/json'
-                }
-            }
-            ).then((response) => {
-                setCompanies(response.data);
-            }).catch((error) => {
-                Alert.alert("Error", "Something went wrong");
-            })
-           trigger("notificationSuccess", {ignoreAndroidSystemSettings: false, enableVibrateFallback: true})
-    }
+    const {fetchCompanies, companies, isActive} = apiClientContext();
     useEffect(() => {
-        AsyncStorage.getItem("@token").then((token) => {
-            FetchCompanies(token)
-    })
+        fetchCompanies()
     }, [])
 
     const goToConstr = (id) => {
-        console.log("id", id)
         trigger("impactLight", {ignoreAndroidSystemSettings: false, enableVibrateFallback: true})
         navigation.navigate("Construction", {id: id})
      }
     return(
-        <ScrollView scrollEnabled={true} style={styles.scrollView}>
-            <Indicator isActive={isActive} />
-            <View style={styles.container}>
-            {companies && companies.map((company) => {
-                return(
-                    <Pressable key={company.compId} style={styles.button} onPress={() => goToConstr(company.compId)}>
-                            <Text style={styles.text}>{company.compName}</Text>
-                            <Icon name="navigate-next" size={30} color="#fff" />
-                    </Pressable>
-                )
-            })}
-        </View>
-        </ScrollView>
+        <>
+        <Indicator isActive={isActive} />
+            <ScrollView scrollEnabled={true} style={styles.scrollView}>
+                <View style={styles.container}>
+                {companies && companies.map((company) => {
+                    return(
+                        <Pressable key={company.compId} style={styles.button} onPress={() => goToConstr(company.compId)}>
+                                <Text style={styles.text}>{company.compName}</Text>
+                                <Icon name="navigate-next" size={30} color="#fff" />
+                        </Pressable>
+                    )
+                })}
+            </View>
+            </ScrollView>
+        </>
         
     )
     

@@ -1,41 +1,14 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from "axios";
-import { useCallback, useEffect, useState } from 'react';
-import { View, Pressable, Text, StyleSheet, Alert, ScrollView } from 'react-native';
+import { useEffect } from 'react';
+import { View, Pressable, Text, StyleSheet, ScrollView } from 'react-native';
 import { trigger } from 'react-native-haptic-feedback';
-import { Button } from 'react-native-paper';
 import Indicator from '../components/Indicator';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import useBleContext from '../ble/useBLE';
+import apiClientContext from '../api/apiClient';
 
 const MPScreen = ({route, navigation}) => {
-    const [isActive, setIsActive] = useState(true);
-    const {API_URL} = useBleContext();
-    const [MPs, setMPs] = useState(null);
-    const FetchCompanies = async (token) => {
-            await axios.post(API_URL + "MP/get",{
-                compId: route.params?.compId,
-                consId: route.params?.consId
-            }, 
-            {
-                headers:{
-                    'Authorization': String(token).replace(/['"]+/g, ''),
-                    'Content-Type' : 'application/json'
-                }
-            }
-            ).then((response) => {
-                setMPs(response.data);
-            }).catch((error) => {
-                console.log(JSON.stringify(error));
-                // Alert.alert("Error", "Something went wrong");
-                // navigation.goBack();
-            })
-            trigger("notificationSuccess", {ignoreAndroidSystemSettings: false, enableVibrateFallback: true})
-        }
+    const {MPs, fetchMPs, isActive} = apiClientContext();
     useEffect(() => {
-        AsyncStorage.getItem("@token").then((token) => {
-            FetchCompanies(token)
-    })
+        fetchMPs(route.params?.compId, route.params?.consId)
     }, [])
 
     const goToDevice = (MP) => {
@@ -43,21 +16,22 @@ const MPScreen = ({route, navigation}) => {
         navigation.navigate("DeviceInfo", {consId: route.params.conId, compId: route.params.compId, MP: MP})
     }
     return(
-        <ScrollView scrollEnabled={true} style={styles.scrollView}>
-            <View style={styles.container}>
-            {MPs !== null ? MPs.map((MP) => {
-                return(
-                    <Pressable key={MP.mpId} style={styles.button} onPress={() => goToDevice(MP)}>
-                        <Text style={styles.text}>{MP.mpName}</Text>
-                        <Icon name="navigate-next" size={30} color="#fff" />
-                    </Pressable>
-                )
-            }): <Indicator active={true}/>}
-        </View>
-        </ScrollView>
-        
+        <>
+            <Indicator active={isActive}/>
+            <ScrollView scrollEnabled={true} style={styles.scrollView}>
+                <View style={styles.container}>
+                {MPs !== null ? MPs.map((MP) => {
+                    return(
+                        <Pressable key={MP.mpId} style={styles.button} onPress={() => goToDevice(MP)}>
+                            <Text style={styles.text}>{MP.mpName}</Text>
+                            <Icon name="navigate-next" size={30} color="#fff" />
+                        </Pressable>
+                    )
+                }): <Indicator active={true}/>}
+            </View>
+            </ScrollView>
+        </>
     )
-    
 }
 
 const styles = StyleSheet.create({
