@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { View, Pressable, Text, StyleSheet, ScrollView } from 'react-native';
 import { trigger } from 'react-native-haptic-feedback';
-import Indicator from '../components/Indicator';
+import Indicator from '../components/activityIndicator';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import apiClientContext from '../api/apiClient';
 

@@ -6,6 +6,8 @@ import {
 import { useEffect, useState, useRef } from 'react';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import useBleContext from '../ble/useBLE';
+import notificationSuccess from '../components/notificationSuccess';
+import notificationError from '../components/notificationErr';
 
 const useFwUpdate = (
   bleId: string | null,
@@ -78,29 +80,12 @@ const useFwUpdate = (
       eraseImage(bleId)
         .then(() => {
           sendCommand('mcuboot');
-          Toast.show({
-            type: 'success',
-            text1: 'Image erased',
-            visibilityTime: 3000,
-            autoHide: true,
-          });
+          notificationSuccess('Image erased');
         })
         .catch(error => {
-          Toast.show({
-            type: 'error',
-            text1: 'Error erasing image',
-            text2: error.message,
-            visibilityTime: 3000,
-            autoHide: true,
-          });
+          notificationError('Error erasing image');
         });
-    } else
-      Toast.show({
-        type: 'error',
-        text1: 'No device connected',
-        visibilityTime: 3000,
-        autoHide: true,
-      });
+    } else notificationError('No device connected');
     setIsActive(false);
   };
 

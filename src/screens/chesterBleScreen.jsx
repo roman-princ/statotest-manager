@@ -9,10 +9,11 @@ import {
   Modal,
 } from 'react-native';
 import useBleContext from '../ble/useBLE';
-import ButtonDarkRed from '../components/ButtonDarkRed';
-import Indicator from '../components/Indicator';
+import ButtonDarkRed from '../components/buttonCommand';
+import Indicator from '../components/activityIndicator';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import notificationSuccess from '../components/notificationSuccess';
 
 const DeviceScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -96,13 +97,7 @@ const DeviceScreen = ({ navigation }) => {
     sendCommand('stt config send-interval ' + parseInt(sendValue));
     sendCommand('config save');
     setModalVisible(false);
-    Toast.show({
-      type: 'success',
-      text1: 'Success',
-      text2: 'Configuration saved',
-      visibilityTime: 2000,
-      autoHide: true,
-    });
+    notificationSuccess('Configuration saved');
     Alert.alert('Success', 'Device is being restarted to apply changes');
     navigation.goBack();
   };

@@ -9,7 +9,7 @@ import {
   TextInput,
 } from 'react-native';
 import useBleContext from '../ble/useBLE';
-import ButtonDarkRed from '../components/ButtonDarkRed';
+import ButtonDarkRed from '../components/buttonCommand';
 
 const TerminalScreen = ({ navigation }) => {
   const [isDisabled, setIsDisabled] = useState(true);

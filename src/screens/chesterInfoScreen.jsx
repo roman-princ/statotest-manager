@@ -9,7 +9,7 @@ import {
   Modal,
 } from 'react-native';
 import dayjs from 'dayjs';
-import Indicator from '../components/Indicator';
+import Indicator from '../components/activityIndicator';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import apiClientContext from '../api/apiClient';
 

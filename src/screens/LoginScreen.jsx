@@ -11,8 +11,8 @@ import {
   Keyboard,
 } from 'react-native';
 import { useState } from 'react';
-import SizedBox from '../components/SizedBox';
-import Indicator from '../components/Indicator';
+import SizedBox from '../components/sizedBox';
+import Indicator from '../components/activityIndicator';
 import apiClientContext from '../api/apiClient';
 
 export default function LoginScreen({ navigation }) {

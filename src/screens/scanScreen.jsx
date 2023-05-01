@@ -12,7 +12,7 @@ import useBleContext from '../ble/useBLE';
 import high from '../../assets/images/high.png';
 import mid from '../../assets/images/mid.png';
 import low from '../../assets/images/low.png';
-import Indicator from '../components/Indicator';
+import Indicator from '../components/activityIndicator';
 import { trigger } from 'react-native-haptic-feedback';
 
 const ScanningScreen = ({ navigation }) => {

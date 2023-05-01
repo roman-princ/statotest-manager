@@ -3,7 +3,7 @@ import { View, Pressable, Text, StyleSheet, ScrollView } from 'react-native';
 import { trigger } from 'react-native-haptic-feedback';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import apiClientContext from '../api/apiClient';
-import Indicator from '../components/Indicator';
+import Indicator from '../components/activityIndicator';
 
 const ConstructionScreen = ({ route, navigation }) => {
   const { constructions, fetchConstructions, isActive } = apiClientContext();

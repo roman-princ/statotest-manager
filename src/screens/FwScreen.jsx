@@ -12,9 +12,9 @@ import useFile from '../fwupdate/useFile';
 import useFwUpdate from '../fwupdate/useFwUpdate';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { UpgradeMode } from '@playerdata/react-native-mcu-manager';
-import SizedBox from '../components/SizedBox';
+import SizedBox from '../components/sizedBox';
 import { Bar } from 'react-native-progress';
-import Indicator from '../components/Indicator';
+import Indicator from '../components/activityIndicator';
 
 const FwScreen = ({ navigation }) => {
   const { pickFile, file } = useFile();

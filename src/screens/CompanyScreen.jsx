@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { trigger } from 'react-native-haptic-feedback';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Indicator from '../components/Indicator';
+import Indicator from '../components/activityIndicator';
 import apiClientContext from '../api/apiClient';
 
 const CompanyScreen = ({ navigation }) => {

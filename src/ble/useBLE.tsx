@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { useBetween } from 'use-between';
 import { atob, btoa } from 'react-native-quick-base64';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
+import notificationError from '../components/notificationErr';
 
 const CHESTER_SERVICE_UUID = '6E400001-B5A3-F393-E0A9-E50E24DCCA9E';
 const CHESTER_RECIEVE_CHARACTERISTIC_UUID =
@@ -75,13 +76,9 @@ function useBLE(): BluetoothLowEnergyAPI {
       if (error) {
         console.log(JSON.stringify(error.errorCode));
         if (error.errorCode === 600) {
-          Toast.show({
-            type: 'error',
-            text1: 'Bluetooth is disabled',
-            text2: 'Please enable bluetooth to scan for CHESTER sensors',
-            visibilityTime: 4000,
-            autoHide: true,
-          });
+          notificationError(
+            'Please enable bluetooth to scan for CHESTER sensors',
+          );
         }
         return;
       }
@@ -107,13 +104,7 @@ function useBLE(): BluetoothLowEnergyAPI {
         });
       bleManager.stopDeviceScan();
     } catch (error) {
-      Toast.show({
-        type: 'error',
-        text1: 'Error connecting to device',
-        text2: 'Please try again',
-        visibilityTime: 3000,
-        autoHide: true,
-      });
+      notificationError('Error connecting to device');
     }
   };
 
@@ -125,7 +116,7 @@ function useBLE(): BluetoothLowEnergyAPI {
         (error, characteristic) => onDataReceived(error, characteristic),
       );
     } else {
-      console.log('No device connected');
+      notificationError('No device connected');
     }
   };
   const onDataReceived = (
@@ -133,21 +124,10 @@ function useBLE(): BluetoothLowEnergyAPI {
     characteristic: Characteristic | null,
   ) => {
     if (error) {
-      console.log(JSON.stringify(error));
-      Toast.show({
-        type: 'error',
-        text1: error.message,
-        visibilityTime: 3000,
-        autoHide: true,
-      });
+      notificationError(error.message);
       return;
     } else if (!characteristic?.value) {
-      Toast.show({
-        type: 'error',
-        text1: 'No data received',
-        visibilityTime: 3000,
-        autoHide: true,
-      });
+      notificationError('No data received');
       return;
     }
 

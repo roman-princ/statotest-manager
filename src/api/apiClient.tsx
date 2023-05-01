@@ -4,6 +4,8 @@ import { Alert, Keyboard } from 'react-native';
 import { trigger } from 'react-native-haptic-feedback';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
+import notificationError from '../components/notificationErr';
+import notificationSuccess from '../components/notificationSuccess';
 
 interface IApiClient {
   fetchCompanies: () => Promise<void>;
@@ -46,13 +48,7 @@ const apiClientContext = (): IApiClient => {
         });
       })
       .catch(error => {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: error.message,
-          visibilityTime: 2000,
-          autoHide: true,
-        });
+        notificationError(error.message);
       });
     setIsActive(false);
   };
@@ -75,8 +71,7 @@ const apiClientContext = (): IApiClient => {
           setCompanies(response.data);
         })
         .catch(error => {
-          console.log(JSON.stringify(error));
-          Alert.alert('Error', 'Something went wrong');
+          notificationError(error.message);
         });
       setIsActive(false);
       trigger('notificationSuccess', {
@@ -106,13 +101,7 @@ const apiClientContext = (): IApiClient => {
           setConstructions(response.data);
         })
         .catch(error => {
-          Toast.show({
-            type: 'error',
-            text1: 'Something went wrong',
-            text2: error.message,
-            visibilityTime: 3000,
-            autoHide: true,
-          });
+          notificationError(error.message);
         });
       trigger('notificationSuccess', {
         ignoreAndroidSystemSettings: false,
@@ -143,13 +132,7 @@ const apiClientContext = (): IApiClient => {
           setMP(response.data);
         })
         .catch(error => {
-          Toast.show({
-            type: 'error',
-            text1: 'Something went wrong',
-            text2: error.message,
-            visibilityTime: 3000,
-            autoHide: true,
-          });
+          notificationError(error.message);
         });
       setIsActive(false);
       trigger('notificationSuccess', {
@@ -194,23 +177,11 @@ const apiClientContext = (): IApiClient => {
               setDevice(response.data);
             })
             .catch(error => {
-              Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Something went wrong',
-                visibilityTime: 2000,
-                autoHide: true,
-              });
+              notificationError(error.message);
             });
         })
         .catch(error => {
-          Toast.show({
-            type: 'error',
-            text1: 'Error',
-            text2: 'Something went wrong',
-            visibilityTime: 2000,
-            autoHide: true,
-          });
+          notificationError(error.message);
         });
       trigger('notificationSuccess', {
         ignoreAndroidSystemSettings: false,
@@ -238,27 +209,14 @@ const apiClientContext = (): IApiClient => {
           },
         )
         .then(() => {
-          Toast.show({
-            type: 'success',
-            text1: 'Description updated to ' + desc,
-            text2: '',
-            visibilityTime: 2000,
-            autoHide: true,
-          });
+          notificationSuccess('Description updated to ' + desc);
         })
         .catch(error => {
-          console.log(JSON.stringify(error));
           trigger('notificationError', {
             ignoreAndroidSystemSettings: false,
             enableVibrateFallback: true,
           });
-          Toast.show({
-            type: 'error',
-            text1: 'Error',
-            text2: 'Something went wrong',
-            visibilityTime: 2000,
-            autoHide: true,
-          });
+          notificationError(error.message);
         });
     });
     setIsActive(false);
@@ -278,5 +236,4 @@ const apiClientContext = (): IApiClient => {
   };
 };
 
-// const apiClientContext = () => useBetween(apiClient);
 export default apiClientContext;
