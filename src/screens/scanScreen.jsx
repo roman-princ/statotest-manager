@@ -49,9 +49,13 @@ const ScanningScreen = ({ navigation }) => {
       enableVibrateFallback: true,
     });
     setIndicatorIsActive(true);
-    await connectToDevice(device).then(() => {
+    // await connectToDevice(device).then(() => {
+    //   navigation.navigate('Device');
+    // });
+    const isConnected = await connectToDevice(device);
+    if (isConnected) {
       navigation.navigate('Device');
-    });
+    }
     setIndicatorIsActive(false);
   };
 

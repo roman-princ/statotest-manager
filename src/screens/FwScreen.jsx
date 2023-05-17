@@ -15,10 +15,12 @@ import { UpgradeMode } from '@playerdata/react-native-mcu-manager';
 import SizedBox from '../components/sizedBox';
 import { Bar } from 'react-native-progress';
 import Indicator from '../components/activityIndicator';
+import useCurrentDevice from '../ble/currentDevice';
 
 const FwScreen = ({ navigation }) => {
   const { pickFile, file } = useFile();
-  const { currentDevice, sendCommand, ChesterData } = useBleContext();
+  const { sendCommand, ChesterData } = useBleContext();
+  const { currentDevice } = useCurrentDevice();
   const { cancelUpdate, runUpdate, progress, state, deleteImage, isActive } =
     useFwUpdate(
       currentDevice.id,
@@ -180,7 +182,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'baseline',
     marginBottom: 5,
-    // display: "none",
   },
 });
 export default FwScreen;

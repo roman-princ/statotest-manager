@@ -10,8 +10,8 @@ import {
 import { useState } from 'react';
 import { useBetween } from 'use-between';
 import { atob, btoa } from 'react-native-quick-base64';
-import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import notificationError from '../components/notificationErr';
+import useCurrentDevice from './currentDevice';
 
 const CHESTER_SERVICE_UUID = '6E400001-B5A3-F393-E0A9-E50E24DCCA9E';
 const CHESTER_RECIEVE_CHARACTERISTIC_UUID =
@@ -29,26 +29,29 @@ type PermissionCallback = (result: boolean) => void;
 
 interface BluetoothLowEnergyAPI {
   requestPermission(callback: PermissionCallback): Promise<void>;
-  connectToDevice(device: Device): Promise<void>;
-  currentDevice: Device | null;
+  connectToDevice(device: Device): Promise<boolean>;
   ChesterData: string;
   scanForDevices(): void;
   startStreamingData(device: Device): void;
   onDataReceived(
     error: Error | null,
     characteristic: Characteristic | null,
-  ): void;
+  ): boolean;
   sendCommand(command: string): void;
   stopAndStartScan(): void;
   devices: Device[];
-  API_URL: string;
+  setData(data: string): void;
 }
 const bleManager = new BleManager();
 
-function useBLE(): BluetoothLowEnergyAPI {
+function useBleContext(): BluetoothLowEnergyAPI {
   const [devices, setDevices] = useState<Device[]>([]);
-  const [currentDevice, setConnectedDevice] = useState<Device | null>(null);
-  const [ChesterData, setData] = useState<string>('');
+  // const [currentDevice, setConnectedDevice] = useState<Device | null>(null);
+  const { currentDevice, setConnectedDevice } = useCurrentDevice();
+  const [ChesterData, setDataChester] = useState<string>('');
+  const setData = (data: string) => {
+    setDataChester(prevData => prevData + data);
+  };
   const requestPermission = async (callback: PermissionCallback) => {
     if (Platform.OS === 'android') {
       const grantedStatus = await PermissionsAndroid.request(
@@ -74,7 +77,6 @@ function useBLE(): BluetoothLowEnergyAPI {
   const scanForDevices = () => {
     bleManager.startDeviceScan(null, scanningOptions, (error, device) => {
       if (error) {
-        console.log(JSON.stringify(error.errorCode));
         if (error.errorCode === 600) {
           notificationError(
             'Please enable bluetooth to scan for CHESTER sensors',
@@ -93,18 +95,24 @@ function useBLE(): BluetoothLowEnergyAPI {
     });
   };
 
-  const connectToDevice = async (device: Device) => {
+  const connectToDevice = async (device: Device): Promise<boolean> => {
     try {
-      setData('');
-      await bleManager
-        .connectToDevice(device.id, connectOptions)
-        .then(async (device1: Device) => {
-          setConnectedDevice(device1);
-          await device1.discoverAllServicesAndCharacteristics();
-        });
-      bleManager.stopDeviceScan();
+      setDataChester('');
+      const connectedDevice = await bleManager.connectToDevice(
+        device.id,
+        connectOptions,
+      );
+      if (connectedDevice != null) {
+        setConnectedDevice(connectedDevice);
+        await connectedDevice.discoverAllServicesAndCharacteristics();
+        bleManager.stopDeviceScan();
+        return true; // Connection succeeded
+      } else {
+        return false; // Connection failed
+      }
     } catch (error) {
       notificationError('Error connecting to device');
+      return false; // Connection failed
     }
   };
 
@@ -122,20 +130,22 @@ function useBLE(): BluetoothLowEnergyAPI {
   const onDataReceived = (
     error: BleError | null,
     characteristic: Characteristic | null,
-  ) => {
+  ): boolean => {
     if (error) {
       notificationError(error.message);
-      return;
+      Alert.alert('Error', error.message);
+      return false;
     } else if (!characteristic?.value) {
       notificationError('No data received');
-      return;
+      return false;
     }
 
     const decodedData = atob(characteristic.value);
-    return setData(prevState => prevState + decodedData);
+    setData(decodedData);
+    return true;
   };
   const sendCommand = (command: string) => {
-    setData('');
+    setDataChester('');
     if (currentDevice) {
       currentDevice.writeCharacteristicWithResponseForService(
         CHESTER_SERVICE_UUID,
@@ -156,13 +166,13 @@ function useBLE(): BluetoothLowEnergyAPI {
     devices,
     connectToDevice,
     startStreamingData,
-    currentDevice,
+    // currentDevice,
     ChesterData,
     onDataReceived,
     sendCommand,
     stopAndStartScan,
-    API_URL: 'https://statotestapiv3.azurewebsites.net/',
+    setData,
   };
 }
-const useBleContext = () => useBetween(useBLE);
+
 export default useBleContext;

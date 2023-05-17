@@ -12,6 +12,7 @@
   "dependencies": {
     "@playerdata/react-native-mcu-manager": "^2.3.2",
     "@react-native-async-storage/async-storage": "^1.18.0",
+    "@react-native-community/geolocation": "^3.0.6",
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/material-bottom-tabs": "^6.2.15",
     "@react-navigation/native": "^6.1.6",

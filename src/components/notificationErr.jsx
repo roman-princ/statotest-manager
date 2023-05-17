@@ -5,7 +5,7 @@ const notificationError = message => {
     type: 'error',
     text1: 'Error',
     text2: message,
-    visibilityTime: 3000,
+    visibilityTime: 4000,
     autoHide: true,
   });
 };

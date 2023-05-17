@@ -19,10 +19,15 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { handleLogin, isActive } = apiClientContext();
-  const login = () => {
-    handleLogin(email, password).then(() => {
+  const login = async () => {
+    const isLoggedIn = await handleLogin(email, password);
+    // handleLogin(email, password).then(() => {
+    //   navigation.navigate('Company');
+    // });
+    console.log(isLoggedIn);
+    if (isLoggedIn) {
       navigation.navigate('Company');
-    });
+    }
   };
   return (
     <>

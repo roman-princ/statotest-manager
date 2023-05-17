@@ -4,7 +4,6 @@ import {
   eraseImage,
 } from '@playerdata/react-native-mcu-manager';
 import { useEffect, useState, useRef } from 'react';
-import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import useBleContext from '../ble/useBLE';
 import notificationSuccess from '../components/notificationSuccess';
 import notificationError from '../components/notificationErr';

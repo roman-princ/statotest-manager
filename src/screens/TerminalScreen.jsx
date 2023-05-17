@@ -10,10 +10,12 @@ import {
 } from 'react-native';
 import useBleContext from '../ble/useBLE';
 import ButtonDarkRed from '../components/buttonCommand';
+import useCurrentDevice from '../ble/currentDevice';
 
 const TerminalScreen = ({ navigation }) => {
   const [isDisabled, setIsDisabled] = useState(true);
-  const { currentDevice, ChesterData } = useBleContext();
+  const { ChesterData } = useBleContext();
+  const { currentDevice } = useCurrentDevice();
   const [command, setCommand] = useState('');
   useEffect(() => {
     const asyncFn = async () => {

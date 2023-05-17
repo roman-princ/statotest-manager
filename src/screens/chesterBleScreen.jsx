@@ -14,6 +14,7 @@ import Indicator from '../components/activityIndicator';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import notificationSuccess from '../components/notificationSuccess';
+import useCurrentDevice from '../ble/currentDevice';
 
 const DeviceScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -23,8 +24,8 @@ const DeviceScreen = ({ navigation }) => {
   const [currentTime, setCurrentTime] = useState();
   const [sendValue, setSendValue] = useState('');
   const [isDisabled, setIsDisabled] = useState(true);
-  const { currentDevice, startStreamingData, sendCommand, ChesterData } =
-    useBleContext();
+  const { startStreamingData, sendCommand, ChesterData } = useBleContext();
+  const { currentDevice } = useCurrentDevice();
   useEffect(() => {
     const initFn = async () => {
       if (currentDevice) {
@@ -107,11 +108,20 @@ const DeviceScreen = ({ navigation }) => {
       <Indicator active={isActive} />
       <View style={styles.container}>
         <View style={styles.buttons}>
-          <ButtonDarkRed
+          {/* <ButtonDarkRed
             text="Measure"
             args={'stt measure'}
             disabled={isDisabled}
-          />
+          /> */}
+          <Pressable
+            style={styles.button}
+            onPress={() => {
+              sendCommand('stt measure');
+              navigation.navigate('Terminal');
+            }}
+            disabled={isDisabled}>
+            <Text style={styles.buttonTitle}>Measure</Text>
+          </Pressable>
           <Pressable
             style={styles.button}
             onPress={async () => {

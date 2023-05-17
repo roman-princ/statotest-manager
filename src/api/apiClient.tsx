@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { useState } from 'react';
-import { Alert, Keyboard } from 'react-native';
+import { Keyboard } from 'react-native';
 import { trigger } from 'react-native-haptic-feedback';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import notificationError from '../components/notificationErr';
 import notificationSuccess from '../components/notificationSuccess';
+import Geolocation from '@react-native-community/geolocation';
 
 interface IApiClient {
   fetchCompanies: () => Promise<void>;
@@ -13,7 +13,8 @@ interface IApiClient {
   fetchMPs: (compId: String, consId: String) => Promise<void>;
   fetchDevice: (compId: String, consId: String, mpId: String) => Promise<void>;
   handleEditDesc: (compId: String, mpId: String, desc: String) => Promise<void>;
-  handleLogin: (email: String, password: String) => Promise<void>;
+  handleLogin: (email: String, password: String) => Promise<boolean>;
+  setLocation: (compId: String, mpId: String) => void;
   companies: any;
   constructions: any;
   MPs: any;
@@ -28,29 +29,34 @@ const apiClientContext = (): IApiClient => {
   const [MPs, setMP] = useState([]);
   const [device, setDevice] = useState([]);
   const [isActive, setIsActive] = useState(false);
-  const handleLogin = async (email: String, password: String) => {
+
+  const handleLogin = async (
+    email: String,
+    password: String,
+  ): Promise<boolean> => {
     trigger('impactLight', {
       enableVibrateFallback: true,
       ignoreAndroidSystemSettings: false,
     });
+
     Keyboard.dismiss();
     setIsActive(true);
-    await axios
-      .post(API_URL + 'Accounts/authenticate', {
+
+    try {
+      const response = await axios.post(API_URL + 'Accounts/authenticate', {
         email: email,
         password: password,
-      })
-      .then(response => {
-        let token = JSON.stringify(response.data.jwtToken);
-        AsyncStorage.setItem('token', token).then(() => {
-          setIsActive(false);
-          return;
-        });
-      })
-      .catch(error => {
-        notificationError(error.message);
       });
-    setIsActive(false);
+
+      const token = JSON.stringify(response.data.jwtToken);
+      await AsyncStorage.setItem('token', token);
+      setIsActive(false);
+      return true;
+    } catch (error) {
+      notificationError("Email or password doesn't match");
+      setIsActive(false);
+      return false;
+    }
   };
 
   const fetchCompanies = async () => {
@@ -175,13 +181,14 @@ const apiClientContext = (): IApiClient => {
             )
             .then(response => {
               setDevice(response.data);
+              console.log(response.data);
             })
             .catch(error => {
               notificationError(error.message);
             });
         })
         .catch(error => {
-          notificationError(error.message);
+          //notificationError(error.message);
         });
       trigger('notificationSuccess', {
         ignoreAndroidSystemSettings: false,
@@ -221,6 +228,42 @@ const apiClientContext = (): IApiClient => {
     });
     setIsActive(false);
   };
+
+  const setLocation = async (compId: String, mpId: String) => {
+    Geolocation.getCurrentPosition(info => {
+      setIsActive(true);
+      AsyncStorage.getItem('token').then(token => {
+        axios
+          .post(
+            API_URL + 'MP/Upd',
+            {
+              compId: compId,
+              mpId: mpId,
+              mpLat: info.coords.latitude,
+              mpLong: info.coords.longitude,
+            },
+            {
+              headers: {
+                Authorization: String(token).replace(/['"]+/g, ''),
+                'Content-Type': 'application/json',
+              },
+            },
+          )
+          .then(() => {
+            notificationSuccess('Location updated');
+          })
+          .catch(error => {
+            trigger('notificationError', {
+              ignoreAndroidSystemSettings: false,
+              enableVibrateFallback: true,
+            });
+            notificationError(error.message);
+          });
+      });
+      setIsActive(false);
+    });
+  };
+
   return {
     handleLogin,
     handleEditDesc,
@@ -233,6 +276,7 @@ const apiClientContext = (): IApiClient => {
     MPs,
     device,
     isActive,
+    setLocation,
   };
 };
 

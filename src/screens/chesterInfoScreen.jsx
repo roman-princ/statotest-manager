@@ -7,16 +7,19 @@ import {
   ScrollView,
   TextInput,
   Modal,
+  Alert,
 } from 'react-native';
 import dayjs from 'dayjs';
 import Indicator from '../components/activityIndicator';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import apiClientContext from '../api/apiClient';
+import Geolocation from '@react-native-community/geolocation';
 
 const DeviceInfoScreen = ({ route, navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [desc, setDesc] = useState('');
-  const { fetchDevice, device, isActive, handleEditDesc } = apiClientContext();
+  const { fetchDevice, device, isActive, handleEditDesc, setLocation } =
+    apiClientContext();
   const [MP] = useState(route.params?.MP);
   useEffect(() => {
     fetchDevice(route.params?.compId, route.params?.consId, MP.mpId).then(
@@ -30,20 +33,49 @@ const DeviceInfoScreen = ({ route, navigation }) => {
     setModalVisible(!modalVisible);
     handleEditDesc(route.params?.compId, MP.mpId, desc);
   };
+  const showLocationModal = async () => {
+    Alert.alert(
+      'Set MP location',
+      'Do you want to set MP location to your current location?',
+      [
+        {
+          text: 'No',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            setLocation(route.params?.compId, MP.mpId);
+          },
+        },
+      ],
+    );
+  };
 
   return (
     <>
       <Indicator active={isActive} />
-      <ScrollView scrollEnabled={true} style={styles.scrollView}>
+      <ScrollView
+        scrollEnabled={true}
+        style={styles.scrollView}
+        contentContainerStyle={{
+          alignItems: 'center',
+        }}>
         {device && (
           <>
-            <Text style={styles.bigTitle}>
-              {device.devSn === undefined
-                ? device.length == 0
-                  ? 'No device is assigned to MP'
-                  : 'CHESTER'
-                : 'CHESTER ' + device.devSn}
-            </Text>
+            {device.devSn === undefined ? (
+              device.length == 0 ? (
+                <View style={styles.errorWindow}>
+                  <Icon name="error-outline" style size={30} color="#8B0000" />
+                  <Text style={styles.errorText}>No device assigned to MP</Text>
+                </View>
+              ) : (
+                <Text style={styles.bigTitle}>CHESTER</Text>
+              )
+            ) : (
+              <Text style={styles.bigTitle}>CHESTER {device.devSn}</Text>
+            )}
             <View
               style={[
                 styles.container,
@@ -74,9 +106,11 @@ const DeviceInfoScreen = ({ route, navigation }) => {
                 </View>
 
                 <View style={styles.col}>
-                  <Text style={styles.title}>Description</Text>
-                  <Text style={[styles.value, { width: '85%' }]}>
-                    {device.devDesc ? device.devDesc : 'Unknown'}
+                  <Text style={styles.title}>Bluetooth passkey:</Text>
+                  <Text style={styles.value}>
+                    {device.communications
+                      ? device.communications.bluetooth.defaultPassword
+                      : 'Unknown'}
                   </Text>
                 </View>
               </View>
@@ -145,6 +179,14 @@ const DeviceInfoScreen = ({ route, navigation }) => {
                   </Text>
                 </View>
               </View>
+              <View style={styles.row}>
+                <View style={styles.col}>
+                  <Text style={styles.title}>Description</Text>
+                  <Text style={[styles.value, { width: '85%' }]}>
+                    {device.devDesc ? device.devDesc : 'Unknown'}
+                  </Text>
+                </View>
+              </View>
             </View>
 
             <Text style={styles.bigTitle}>Measurement point info</Text>
@@ -207,6 +249,11 @@ const DeviceInfoScreen = ({ route, navigation }) => {
                 </View>
               </View>
             </View>
+            <Pressable
+              style={styles.buttonLocation}
+              onPress={() => showLocationModal()}>
+              <Text style={styles.buttonTitle}>Set MP location</Text>
+            </Pressable>
             <Modal
               animationType="fade"
               transparent={true}
@@ -255,6 +302,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'flex-end',
+  },
+  buttonLocation: {
+    alignItems: 'center',
+    backgroundColor: '#8B0000',
+    borderRadius: 8,
+    width: '95%',
+    height: 'auto',
+    justifyContent: 'center',
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  buttonTitle: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    padding: 15,
+    lineHeight: 22,
+    fontFamily: 'Poppins-Medium',
   },
   modalView: {
     margin: 20,
@@ -352,9 +416,30 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   scrollView: {
-    backgroundColor: '#252526',
     height: '100%',
     width: '100%',
+    backgroundColor: '#252526',
+  },
+  errorWindow: {
+    backgroundColor: 'transparent',
+    borderColor: '#8B0000',
+    borderWidth: 3,
+    width: '85%',
+    height: 'auto',
+    borderRadius: 10,
+    marginTop: 10,
+    marginBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 15,
+  },
+  errorText: {
+    color: '#fff',
+    fontSize: 16,
+    fontFamily: 'Poppins-Medium',
+    textAlign: 'center',
+    marginLeft: 10,
   },
 });
 export default DeviceInfoScreen;

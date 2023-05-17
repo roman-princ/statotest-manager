@@ -5,8 +5,6 @@ import DocumentPicker, {
   isInProgress,
   types,
 } from 'react-native-document-picker';
-import { Alert, NativeModules } from 'react-native';
-import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import notificationError from '../components/notificationErr';
 interface IFile {
   pickFile: () => void;
