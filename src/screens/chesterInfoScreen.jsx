@@ -40,7 +40,6 @@ const DeviceInfoScreen = ({ route, navigation }) => {
       [
         {
           text: 'No',
-          onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
         {
@@ -386,6 +385,7 @@ const styles = StyleSheet.create({
   },
   col: {
     width: '48%',
+    height: '90%',
     marginBottom: 15,
     flexDirection: 'column',
     flexWrap: 'wrap',

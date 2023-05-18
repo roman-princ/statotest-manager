@@ -42,10 +42,8 @@ const DeviceScreen = ({ navigation }) => {
     if (ChesterData.match(/\d+/g) && ChesterData.includes('measure-interval')) {
       const regex = /\d+/g;
       const numbers = ChesterData.match(regex);
-      console.log(numbers);
       setMeasureValue(numbers[0]);
       setSendValue(numbers[1]);
-      console.log(ChesterData);
     }
   }, [ChesterData]);
 

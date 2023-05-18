@@ -21,10 +21,6 @@ export default function LoginScreen({ navigation }) {
   const { handleLogin, isActive } = apiClientContext();
   const login = async () => {
     const isLoggedIn = await handleLogin(email, password);
-    // handleLogin(email, password).then(() => {
-    //   navigation.navigate('Company');
-    // });
-    console.log(isLoggedIn);
     if (isLoggedIn) {
       navigation.navigate('Company');
     }

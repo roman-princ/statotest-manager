@@ -181,7 +181,6 @@ const apiClientContext = (): IApiClient => {
             )
             .then(response => {
               setDevice(response.data);
-              console.log(response.data);
             })
             .catch(error => {
               notificationError(error.message);
