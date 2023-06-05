@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,6 @@ import {
   Modal,
 } from 'react-native';
 import useBleContext from '../ble/useBLE';
-import ButtonDarkRed from '../components/buttonCommand';
 import Indicator from '../components/activityIndicator';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -19,7 +18,7 @@ import useCurrentDevice from '../ble/currentDevice';
 const DeviceScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalRTCVisible, setModalRTCVisible] = useState(false);
-  const [isActive, setIsActive] = useState(false);
+  const [isActive] = useState(false);
   const [measureValue, setMeasureValue] = useState('');
   const [currentTime, setCurrentTime] = useState();
   const [sendValue, setSendValue] = useState('');
@@ -46,6 +45,12 @@ const DeviceScreen = ({ navigation }) => {
       setSendValue(numbers[1]);
     }
   }, [ChesterData]);
+  useEffect(() => {
+    if (!currentDevice) {
+      console.log('Disconnected');
+      navigation.goBack();
+    }
+  }, [currentDevice]);
 
   const handleRtcSave = () => {
     const dateRegex = /^\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}$/;
@@ -106,11 +111,6 @@ const DeviceScreen = ({ navigation }) => {
       <Indicator active={isActive} />
       <View style={styles.container}>
         <View style={styles.buttons}>
-          {/* <ButtonDarkRed
-            text="Measure"
-            args={'stt measure'}
-            disabled={isDisabled}
-          /> */}
           <Pressable
             style={styles.button}
             onPress={() => {

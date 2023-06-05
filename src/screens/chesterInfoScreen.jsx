@@ -108,7 +108,13 @@ const DeviceInfoScreen = ({ route, navigation }) => {
                   <Text style={styles.title}>Bluetooth passkey:</Text>
                   <Text style={styles.value}>
                     {device.communications
-                      ? device.communications.bluetooth.defaultPassword
+                      ? device.communications.bluetooth
+                        ? device.communications.bluetooth.defaultPassword
+                          ? device.communications.bluetooth.defaultPassword
+                          : 'Unknown'
+                        : 'Unknown'
+                        ? 'Unknown'
+                        : 'Unknown'
                       : 'Unknown'}
                   </Text>
                 </View>

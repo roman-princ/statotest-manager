@@ -47,8 +47,9 @@ const bleManager = new BleManager();
 function useBleContext(): BluetoothLowEnergyAPI {
   const [devices, setDevices] = useState<Device[]>([]);
   // const [currentDevice, setConnectedDevice] = useState<Device | null>(null);
-  const { currentDevice, setConnectedDevice } = useCurrentDevice();
-  const [ChesterData, setDataChester] = useState<string>('');
+  const { currentDevice, setConnectedDevice, ChesterData, setDataChester } =
+    useCurrentDevice();
+  // const [ChesterData, setDataChester] = useState<string>('');
   const setData = (data: string) => {
     setDataChester(prevData => prevData + data);
   };
@@ -97,6 +98,7 @@ function useBleContext(): BluetoothLowEnergyAPI {
 
   const connectToDevice = async (device: Device): Promise<boolean> => {
     try {
+      bleManager.cancelDeviceConnection(device.id);
       setDataChester('');
       const connectedDevice = await bleManager.connectToDevice(
         device.id,
@@ -105,6 +107,7 @@ function useBleContext(): BluetoothLowEnergyAPI {
       if (connectedDevice != null) {
         setConnectedDevice(connectedDevice);
         await connectedDevice.discoverAllServicesAndCharacteristics();
+        sendCommand('help');
         bleManager.stopDeviceScan();
         return true; // Connection succeeded
       } else {
@@ -159,6 +162,9 @@ function useBleContext(): BluetoothLowEnergyAPI {
     setDevices([]);
     scanForDevices();
   };
+  bleManager.onDeviceDisconnected(currentDevice?.id || '', () => {
+    setConnectedDevice(null);
+  });
 
   return {
     requestPermission,

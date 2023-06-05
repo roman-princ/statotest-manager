@@ -4,7 +4,8 @@ import { Device } from 'react-native-ble-plx';
 
 const useCD = () => {
   const [currentDevice, setConnectedDevice] = useState<Device | null>(null);
-  return { currentDevice, setConnectedDevice };
+  const [ChesterData, setDataChester] = useState<string>('');
+  return { currentDevice, setConnectedDevice, ChesterData, setDataChester };
 };
 
 const useCurrentDevice = () => useBetween(useCD);

@@ -14,7 +14,7 @@ import mid from '../../assets/images/mid.png';
 import low from '../../assets/images/low.png';
 import Indicator from '../components/activityIndicator';
 import { trigger } from 'react-native-haptic-feedback';
-
+import useCurrentDevice from '../ble/currentDevice';
 const ScanningScreen = ({ navigation }) => {
   const {
     scanForDevices,
@@ -25,6 +25,7 @@ const ScanningScreen = ({ navigation }) => {
   } = useBleContext();
   const [isActive, setIsActive] = useState(false);
   const [IndicatorIsActive, setIndicatorIsActive] = useState(false);
+  const { currentDevice } = useCurrentDevice();
   const rssiConverter = rssi => {
     if (rssi > -50) {
       return high;
@@ -77,10 +78,21 @@ const ScanningScreen = ({ navigation }) => {
             <Pressable
               key={device.id}
               onPress={() => connectAndNavigateToDevice(device)}
-              style={style.deviceItem}>
+              style={[
+                style.deviceItem,
+                {
+                  borderColor: currentDevice?.id === device.id ? '#1DB954' : '',
+                  borderWidth: currentDevice?.id === device.id ? 1 : 0,
+                },
+              ]}>
               <View>
                 <Text style={style.devName}>{device.name}</Text>
                 <Text style={style.devId}>{device.id}</Text>
+                {device.id == currentDevice?.id && (
+                  <Text style={[style.devName, { color: '#1DB954' }]}>
+                    CONNECTED
+                  </Text>
+                )}
               </View>
               <View style={style.rssiContainer}>
                 <Image
