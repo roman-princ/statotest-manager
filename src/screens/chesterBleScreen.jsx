@@ -14,6 +14,7 @@ import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import notificationSuccess from '../components/notificationSuccess';
 import useCurrentDevice from '../ble/currentDevice';
+import notificationError from '../components/notificationErr';
 
 const chesterBleScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -57,19 +58,9 @@ const chesterBleScreen = ({ navigation }) => {
     if (dateRegex.test(currentTime)) {
       sendCommand('rtc set ' + currentTime);
       setModalRTCVisible(false);
-      Toast.show({
-        type: 'success',
-        text1: 'RTC time updated to ' + currentTime,
-        visibilityTime: 5000,
-        autoHide: true,
-      });
+      notificationSuccess('RTC time updated to ' + currentTime);
     } else {
-      Toast.show({
-        type: 'error',
-        text1: 'Invalid date format',
-        visibilityTime: 2000,
-        autoHide: true,
-      });
+      notificationError('Invalid date format');
     }
   };
   const handleShowRTCmodal = () => {
