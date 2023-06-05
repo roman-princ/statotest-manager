@@ -7,7 +7,7 @@ import DeviceInfoScreen from '../screens/chesterInfoScreen';
 
 const Stack = createNativeStackNavigator();
 
-const DataScreen = () => {
+const apiStackNav = () => {
   return (
     <Stack.Navigator initialRouteName="Login">
       <Stack.Screen
@@ -83,4 +83,4 @@ const DataScreen = () => {
   );
 };
 
-export default DataScreen;
+export default apiStackNav;

@@ -12,7 +12,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Indicator from '../components/activityIndicator';
 import apiClientContext from '../api/apiClient';
 
-const CompanyScreen = ({ navigation }) => {
+const companyScreen = ({ navigation }) => {
   const { fetchCompanies, companies, isActive } = apiClientContext();
   useEffect(() => {
     fetchCompanies();
@@ -80,4 +80,4 @@ const styles = StyleSheet.create({
     height: '100%',
   },
 });
-export default CompanyScreen;
+export default companyScreen;

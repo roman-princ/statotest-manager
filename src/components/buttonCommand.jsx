@@ -1,7 +1,7 @@
 import { Pressable, Text, StyleSheet, View } from 'react-native';
 import useBleContext from '../ble/useBLE';
 import { trigger } from 'react-native-haptic-feedback';
-const ButtonDarkRed = ({ text, args, disabled }) => {
+const buttonDarkRed = ({ text, args, disabled }) => {
   const { sendCommand } = useBleContext();
   return (
     <View>
@@ -18,7 +18,7 @@ const ButtonDarkRed = ({ text, args, disabled }) => {
   );
 };
 
-export default ButtonDarkRed;
+export default buttonDarkRed;
 const styles = StyleSheet.create({
   button: {
     alignItems: 'center',

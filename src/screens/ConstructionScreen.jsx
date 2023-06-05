@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import apiClientContext from '../api/apiClient';
 import Indicator from '../components/activityIndicator';
 
-const ConstructionScreen = ({ route, navigation }) => {
+const constructionScreen = ({ route, navigation }) => {
   const { constructions, fetchConstructions, isActive } = apiClientContext();
   useEffect(() => {
     fetchConstructions(route.params?.id);
@@ -73,4 +73,4 @@ const styles = StyleSheet.create({
     height: '100%',
   },
 });
-export default ConstructionScreen;
+export default constructionScreen;

@@ -15,7 +15,7 @@ import low from '../../assets/images/low.png';
 import Indicator from '../components/activityIndicator';
 import { trigger } from 'react-native-haptic-feedback';
 import useCurrentDevice from '../ble/currentDevice';
-const ScanningScreen = ({ navigation }) => {
+const scanScreen = ({ navigation }) => {
   const {
     scanForDevices,
     requestPermission,
@@ -147,4 +147,4 @@ const style = StyleSheet.create({
     color: '#fff',
   },
 });
-export default ScanningScreen;
+export default scanScreen;

@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import notificationSuccess from '../components/notificationSuccess';
 import useCurrentDevice from '../ble/currentDevice';
 
-const DeviceScreen = ({ navigation }) => {
+const chesterBleScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalRTCVisible, setModalRTCVisible] = useState(false);
   const [isActive] = useState(false);
@@ -380,4 +380,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DeviceScreen;
+export default chesterBleScreen;

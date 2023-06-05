@@ -15,7 +15,7 @@ import SizedBox from '../components/sizedBox';
 import Indicator from '../components/activityIndicator';
 import apiClientContext from '../api/apiClient';
 
-export default function LoginScreen({ navigation }) {
+export default function loginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { handleLogin, isActive } = apiClientContext();

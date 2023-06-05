@@ -6,7 +6,7 @@ import TerminalScreen from '../screens/terminalScreen';
 
 const Stack = createNativeStackNavigator();
 
-const BleScreen = () => {
+const bleStackNav = () => {
   return (
     <Stack.Navigator initialRouteName="BLE">
       <Stack.Screen
@@ -65,4 +65,4 @@ const BleScreen = () => {
   );
 };
 
-export default BleScreen;
+export default bleStackNav;

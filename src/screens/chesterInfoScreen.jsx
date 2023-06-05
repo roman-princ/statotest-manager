@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import apiClientContext from '../api/apiClient';
 import Geolocation from '@react-native-community/geolocation';
 
-const DeviceInfoScreen = ({ route, navigation }) => {
+const chesterInfoScreen = ({ route, navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [desc, setDesc] = useState('');
   const { fetchDevice, device, isActive, handleEditDesc, setLocation } =
@@ -448,4 +448,4 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
 });
-export default DeviceInfoScreen;
+export default chesterInfoScreen;

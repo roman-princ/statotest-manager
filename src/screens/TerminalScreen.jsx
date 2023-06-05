@@ -12,7 +12,7 @@ import useBleContext from '../ble/useBLE';
 import ButtonDarkRed from '../components/buttonCommand';
 import useCurrentDevice from '../ble/currentDevice';
 
-const TerminalScreen = ({ navigation }) => {
+const terminalScreen = ({ navigation }) => {
   const [isDisabled, setIsDisabled] = useState(true);
   const { ChesterData } = useBleContext();
   const { currentDevice } = useCurrentDevice();
@@ -123,4 +123,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TerminalScreen;
+export default terminalScreen;

@@ -17,7 +17,7 @@ import { Bar } from 'react-native-progress';
 import Indicator from '../components/activityIndicator';
 import useCurrentDevice from '../ble/currentDevice';
 
-const FwScreen = ({ navigation }) => {
+const fwScreen = ({ navigation }) => {
   const { pickFile, file } = useFile();
   const { sendCommand, ChesterData } = useBleContext();
   const { currentDevice } = useCurrentDevice();
@@ -184,4 +184,4 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
 });
-export default FwScreen;
+export default fwScreen;
